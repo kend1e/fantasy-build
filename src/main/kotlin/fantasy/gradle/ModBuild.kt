@@ -10,7 +10,11 @@ fun Settings.includeModTargets(targets: List<Target>) {
     targets.forEach { include(it.path) }
 }
 
-fun Project.configureMod(metadata: ModMetadata, target: Target) {
+fun Project.configureMod(
+    metadata: ModMetadata,
+    target: Target,
+    templatesDirectory: org.gradle.api.file.Directory = layout.projectDirectory.dir("src/main/templates"),
+) {
     metadata.validate(target)
     pluginManager.apply("fantasy.build.platform")
     pluginManager.apply("fantasy.build.resources")
@@ -23,7 +27,7 @@ fun Project.configureMod(metadata: ModMetadata, target: Target) {
         archiveName.set(metadata.id)
     }
     if (target.loader == Loader.FABRIC) {
-        val template = providers.fileContents(layout.projectDirectory.file("src/main/templates/fabric.mod.json")).asText
+        val template = providers.fileContents(templatesDirectory.file("fabric.mod.json")).asText
         extensions.configure<ResourcesExtension> {
             generate("generateModMetadata") {
                 contents.set(template.map { mapOf("fabric.mod.json" to renderFabricMetadata(it, metadata, target)) })
@@ -34,7 +38,7 @@ fun Project.configureMod(metadata: ModMetadata, target: Target) {
         val values = metadata.templateValues(target)
         val templates = tasks.register<Sync>("generateModMetadata") {
             inputs.properties(values)
-            from("src/main/templates")
+            from(templatesDirectory)
             into(layout.buildDirectory.dir("generated/resources/metadata"))
             expand(values)
         }
