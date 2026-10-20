@@ -11,6 +11,7 @@ repositories { mavenCentral() }
 kotlin { jvmToolchain(21) }
 
 dependencies {
+    implementation("com.google.code.gson:gson:2.10.1")
     testImplementation(gradleTestKit())
     testImplementation("junit:junit:4.13.2")
 }

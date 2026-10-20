@@ -19,6 +19,68 @@ public class PluginFunctionalTest {
     @Rule public TemporaryFolder temporary = new TemporaryFolder();
 
     @Test
+    public void metadataIsGeneratedForEachLoaderWithoutImplicitLibraries() throws IOException {
+        for (String loader : new String[] {"forge", "neoforge", "fabric"}) {
+            Path root = consumer();
+            String loaderVersion = switch (loader) {
+                case "forge" -> "52.1.3";
+                case "neoforge" -> "21.1.206";
+                default -> "0.18.2";
+            };
+            write(root, "build.gradle.kts", """
+                import fantasy.gradle.*
+                plugins {
+                    id("fantasy.build.platform")
+                    id("fantasy.build.resources")
+                }
+                val mod = modMetadata {
+                    id = "fantasy_weapons"
+                    name = "Fantasy Weapons"
+                    group = "example.weapons"
+                    license = "All Rights Reserved"
+                }
+                val target = buildTargets("0.4") {
+                    %s(MinecraftRuntime("1.21.1", 21), "%s") {
+                        requiredMod("custom_library", "2.0")
+                    }
+                }.single()
+                configureMod(mod, target)
+                """.formatted(loader, loaderVersion));
+            String metadataPath;
+            if (loader.equals("fabric")) {
+                metadataPath = "fabric.mod.json";
+                write(root, "src/main/templates/" + metadataPath, "{\"schemaVersion\":1}");
+            } else {
+                metadataPath = "META-INF/" + (loader.equals("forge") ? "mods.toml" : "neoforge.mods.toml");
+                write(root, "src/main/templates/" + metadataPath, """
+                    modLoader="javafml"
+                    loaderVersion="${loader_version_range}"
+                    license="${mod_license}"
+                    [[mods]]
+                    modId="${mod_id}"
+                    version="${mod_version}"
+                    displayName="${mod_name}"
+                    ${mod_dependencies}
+                    """);
+            }
+            runner(root, "assemble", "--configuration-cache").build();
+            Path jar = root.resolve("build/libs/fantasy_weapons-0.4-1.21.1.jar");
+            try (ZipFile zip = new ZipFile(jar.toFile())) {
+                String text = new String(zip.getInputStream(zip.getEntry(metadataPath)).readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+                assertTrue(text.contains("fantasy_weapons"));
+                assertTrue(text.contains("0.4-1.21.1"));
+                assertFalse(text.contains("geckolib"));
+                assertFalse(text.contains("cloth-config"));
+                assertFalse(text.contains("fabric-api"));
+                assertTrue(text.contains("custom_library"));
+                assertFalse(text.contains("${"));
+            }
+            BuildResult repeated = runner(root, "assemble", "--configuration-cache").build();
+            assertTrue(repeated.getOutput(), repeated.getOutput().contains("Reusing configuration cache"));
+        }
+    }
+
+    @Test
     public void independentModsShareSourcesAndGenerateResourcesWithConfigurationCache() throws IOException {
         for (String modId : new String[] {"fantasy_armor", "fantasy_weapons"}) {
             Path root = temporary.newFolder(modId).toPath();
