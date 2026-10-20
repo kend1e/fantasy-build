@@ -6,6 +6,22 @@ import org.junit.Test
 
 class TargetDefinitionsTest {
     private val runtime = MinecraftRuntime("1.21.1", 21)
+
+    @Test fun `loader build options are declared per target`() {
+        val targets = buildTargets("1") {
+            forge(MinecraftRuntime("1.20.1", 17), "47.3.12") {
+                names = ForgeNames.SRG
+                dataGeneration = true
+            }
+            fabric(runtime, "0.18.2")
+        }
+        assertEquals(ForgeNames.SRG, targets.first().build.forgeNames)
+        assertTrue(targets.first().build.dataGeneration)
+        assertFalse(targets.last().build.dataGeneration)
+        assertThrows(IllegalArgumentException::class.java) {
+            targets.last().copy(build = LoaderBuild(forgeNames = ForgeNames.SRG))
+        }
+    }
     private val metadata = modMetadata {
         id = "fantasy_weapons"
         name = "Fantasy Weapons"

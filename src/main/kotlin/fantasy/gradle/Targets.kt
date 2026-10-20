@@ -18,6 +18,7 @@ data class Target(
     val releaseVersion: String,
     val dependencies: List<ModDependency>,
     val minecraftRange: String,
+    val build: LoaderBuild = LoaderBuild(),
 ) : Serializable {
     val loader get() = settings.loader
     val loaderVersion get() = settings.version
@@ -33,6 +34,7 @@ data class Target(
         require(loaderVersion.isNotBlank()) { "$name: loader version is required" }
         require(releaseVersion.isNotBlank()) { "$name: release version is required" }
         require(minecraftRange.isNotBlank()) { "$name: Minecraft version range is required" }
+        require(loader == Loader.FORGE || build.forgeNames == ForgeNames.OFFICIAL) { "$name: SRG mappings are supported only by the Forge adapter" }
         require(dependencies.map { it.id }.distinct().size == dependencies.size) { "$name: duplicate mod dependencies" }
         dependencies.forEach { dependency ->
             val pattern = if (loader == Loader.FABRIC) "[a-z][a-z0-9_-]{1,63}" else "[a-z][a-z0-9_]{1,63}"
@@ -60,12 +62,20 @@ open class TargetBuilder internal constructor(
     private val dependencies = mutableListOf<ModDependency>()
     var releaseVersion: String = releaseVersion
     var minecraftRange: String = settings.loader.minimumVersion(runtime.id)
+    var dataGeneration: Boolean = false
 
     fun dependency(dependency: ModDependency) { dependencies.add(dependency) }
     fun requiredMod(id: String, version: String) = dependency(RequiredMod(id, version))
     fun geckolib(version: String) = dependency(GeckoLib(version))
 
-    internal fun build() = Target(settings, runtime, releaseVersion, dependencies.toList(), minecraftRange)
+    internal open fun build() = Target(settings, runtime, releaseVersion, dependencies.toList(), minecraftRange, LoaderBuild(dataGeneration))
+}
+
+@ModBuildDsl
+class ForgeTargetBuilder internal constructor(runtime: MinecraftRuntime, version: String, releaseVersion: String) :
+    TargetBuilder(runtime, ForgeSettings(version), releaseVersion) {
+    var names: ForgeNames = ForgeNames.OFFICIAL
+    internal override fun build() = super.build().let { it.copy(build = it.build.copy(forgeNames = names)) }
 }
 
 @ModBuildDsl
@@ -79,8 +89,8 @@ class FabricTargetBuilder internal constructor(runtime: MinecraftRuntime, versio
 class TargetsBuilder internal constructor(private val releaseVersion: String) {
     private val targets = linkedMapOf<String, Target>()
 
-    fun forge(runtime: MinecraftRuntime, version: String, configure: TargetBuilder.() -> Unit = {}) =
-        add(TargetBuilder(runtime, ForgeSettings(version), releaseVersion).apply(configure).build())
+    fun forge(runtime: MinecraftRuntime, version: String, configure: ForgeTargetBuilder.() -> Unit = {}) =
+        add(ForgeTargetBuilder(runtime, version, releaseVersion).apply(configure).build())
 
     fun neoforge(runtime: MinecraftRuntime, version: String, configure: TargetBuilder.() -> Unit = {}) =
         add(TargetBuilder(runtime, NeoForgeSettings(version), releaseVersion).apply(configure).build())

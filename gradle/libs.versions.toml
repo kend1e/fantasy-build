@@ -1,0 +1,11 @@
+[versions]
+loom = "1.13.6"
+forgeGradle = "7.0.29"
+renamer = "1.1.2"
+moddev = "2.0.107"
+
+[libraries]
+loom = { module = "net.fabricmc:fabric-loom", version.ref = "loom" }
+forgeGradle = { module = "net.minecraftforge.gradle:net.minecraftforge.gradle.gradle.plugin", version.ref = "forgeGradle" }
+renamer = { module = "net.minecraftforge:renamer-gradle", version.ref = "renamer" }
+moddev = { module = "net.neoforged:moddev-gradle", version.ref = "moddev" }

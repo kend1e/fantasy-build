@@ -6,3 +6,4 @@ pluginManagement {
 }
 
 rootProject.name = "fantasy-build"
+include("fabric", "forge", "neoforge")

@@ -46,9 +46,9 @@ No target requires GeckoLib, Cloth Config or Fabric API by default. Declare `gec
 `requiredMod(id, version)` adds another required mod without changing the plugin.
 Custom integrations can implement `ModDependency` and be added with `dependency(...)`.
 
-Declarations supply both metadata requirements and dependency notations. The consuming
-loader adapter still applies Loom/ForgeGradle/ModDevGradle, declares repositories, and
-attaches the notations through its native dependency API, for example:
+Declarations supply both metadata requirements and dependency notations. The optional [loader adapters](loaders.md) apply Loom/ForgeGradle/ModDevGradle, declare
+repositories, and attach supported libraries through their native dependency API. A custom
+adapter can use the same notations, for example:
 
 ```kotlin
 modImplementation(target.dependency<FabricApi>().notation)
