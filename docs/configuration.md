@@ -38,7 +38,7 @@ The example above needs a `loaders/fabric/src/main/templates/fabric.mod.json` co
 library defaults, recipe/model formats, pack formats and test registration APIs.
 Projects select targets; they do not maintain a second version catalog. A version
 argument overrides a loader or library default, e.g. `forge("1.20.1", version = "47.3.0")`.
-The low-level overload accepting `MinecraftRuntime` remains available for custom adapters.
+Targets accept Minecraft versions from the verified catalog. Loader and library versions can be overridden explicitly.
 
 Targets are explicit: `forge`, `neoforge` and `fabric` do not infer other combinations.
 Use `includeModTargets(targets)` in a settings plugin to include their project paths.

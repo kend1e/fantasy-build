@@ -90,26 +90,38 @@ class FabricTargetBuilder internal constructor(runtime: MinecraftRuntime, versio
 class TargetsBuilder internal constructor(private val releaseVersion: String) {
     private val targets = linkedMapOf<String, Target>()
 
-    fun forge(runtime: MinecraftRuntime, version: String, configure: ForgeTargetBuilder.() -> Unit = {}) =
-        add(ForgeTargetBuilder(runtime, version, releaseVersion).apply(configure).build())
-
-    fun neoforge(runtime: MinecraftRuntime, version: String, configure: TargetBuilder.() -> Unit = {}) =
-        add(TargetBuilder(runtime, NeoForgeSettings(version), releaseVersion).apply(configure).build())
-
-    fun fabric(runtime: MinecraftRuntime, version: String, configure: FabricTargetBuilder.() -> Unit = {}) =
-        add(FabricTargetBuilder(runtime, version, releaseVersion).apply(configure).build())
-
-    fun forge(minecraft: String, version: String = MinecraftVersions[minecraft].loader(Loader.FORGE).version,
-              configure: ForgeTargetBuilder.() -> Unit = {}) = forge(MinecraftVersions[minecraft].runtime, version) {
-        names = MinecraftVersions[minecraft].forge.names
-        configure()
+    fun forge(
+        minecraft: String,
+        version: String = MinecraftVersions[minecraft].forge.version,
+        configure: ForgeTargetBuilder.() -> Unit = {},
+    ) {
+        val minecraftVersion = MinecraftVersions[minecraft]
+        val profile = minecraftVersion.forge
+        add(ForgeTargetBuilder(minecraftVersion.runtime, version, releaseVersion).apply {
+            names = profile.names
+            configure()
+        }.build())
     }
 
-    fun neoforge(minecraft: String, version: String = MinecraftVersions[minecraft].loader(Loader.NEOFORGE).version,
-                 configure: TargetBuilder.() -> Unit = {}) = neoforge(MinecraftVersions[minecraft].runtime, version, configure)
+    fun neoforge(
+        minecraft: String,
+        version: String = MinecraftVersions[minecraft].neoforge.version,
+        configure: TargetBuilder.() -> Unit = {},
+    ) {
+        val minecraftVersion = MinecraftVersions[minecraft]
+        minecraftVersion.loader(Loader.NEOFORGE)
+        add(TargetBuilder(minecraftVersion.runtime, NeoForgeSettings(version), releaseVersion).apply(configure).build())
+    }
 
-    fun fabric(minecraft: String, version: String = MinecraftVersions[minecraft].loader(Loader.FABRIC).version,
-               configure: FabricTargetBuilder.() -> Unit = {}) = fabric(MinecraftVersions[minecraft].runtime, version, configure)
+    fun fabric(
+        minecraft: String,
+        version: String = MinecraftVersions[minecraft].fabric.version,
+        configure: FabricTargetBuilder.() -> Unit = {},
+    ) {
+        val minecraftVersion = MinecraftVersions[minecraft]
+        minecraftVersion.loader(Loader.FABRIC)
+        add(FabricTargetBuilder(minecraftVersion.runtime, version, releaseVersion).apply(configure).build())
+    }
 
     private fun add(target: Target) {
         require(targets.putIfAbsent(target.path, target) == null) { "Duplicate build target: ${target.name}" }

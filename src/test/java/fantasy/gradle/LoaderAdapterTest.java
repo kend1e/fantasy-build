@@ -50,7 +50,7 @@ public class LoaderAdapterTest {
                 id("fantasy.build.resources")
             }
             val target = buildTargets("0.4") {
-                %s(MinecraftRuntime("%s", %d), "%s") { %s }
+                %s("%s", "%s") { %s }
             }.single()
             configureMod(modMetadata {
                 id = "fantasy_weapons"
@@ -71,7 +71,7 @@ public class LoaderAdapterTest {
             if (expectedClassifier.isNotEmpty()) check(export.get().artifact.get().asFile.name.endsWith("-$expectedClassifier.jar"))
             println("ADAPTER_OK")
             } }
-            """.formatted(loader, minecraft, minecraft.equals("1.20.1") ? 17 : 21, version, options,
+            """.formatted(loader, minecraft, version, options,
                 loader, taskChecks, artifactTask,
                 artifactTask.equals("renameJar")
                     ? "(expectedArtifact.get() as net.minecraftforge.renamer.gradle.RenameJar).output.get().asFile"

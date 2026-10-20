@@ -42,13 +42,30 @@ class MinecraftCatalogTest {
         }
     }
 
-    @Test fun `pack metadata supports both resource and data formats`() {
-        val pack = JsonParser.parseString(MinecraftVersions["1.21.1"].packMetadata("Example")).asJsonObject["pack"].asJsonObject
-        assertEquals(48, pack["pack_format"].asInt)
-        assertEquals(34, pack["supported_formats"].asJsonObject["min_inclusive"].asInt)
-        val modern = JsonParser.parseString(MinecraftVersions["1.21.11"].packMetadata("Example", dataOnly = true)).asJsonObject["pack"].asJsonObject
-        assertEquals(listOf(94, 1), modern["min_format"].asJsonArray.map { it.asInt })
-        assertFalse(modern.has("supported_formats"))
+    @Test fun `pack metadata retains every verified version format`() {
+        val expected = mapOf(
+            "1.19.4" to """{"pack":{"description":"Example","pack_format":12,"supported_formats":{"min_inclusive":12,"max_inclusive":13}}}""",
+            "1.20.1" to """{"pack":{"description":"Example","pack_format":15}}""",
+            "1.21.1" to """{"pack":{"description":"Example","pack_format":48,"supported_formats":{"min_inclusive":34,"max_inclusive":48}}}""",
+            "1.21.10" to """{"pack":{"description":"Example","pack_format":88,"min_format":88,"max_format":88}}""",
+            "1.21.11" to """{"pack":{"description":"Example","pack_format":94,"min_format":[94,1],"max_format":94}}""",
+        )
+        assertEquals(MinecraftVersions.supported, expected.keys)
+        expected.forEach { (id, json) ->
+            assertEquals(id, JsonParser.parseString(json), JsonParser.parseString(MinecraftVersions[id].packMetadata("Example")))
+            val dataOnly = JsonParser.parseString(json).asJsonObject.apply { getAsJsonObject("pack").remove("supported_formats") }
+            assertEquals(id, dataOnly, JsonParser.parseString(MinecraftVersions[id].packMetadata("Example", dataOnly = true)))
+        }
+    }
+
+    @Test fun `typed loader access rejects unsupported combinations even with explicit versions`() {
+        val version = MinecraftVersions["1.21.1"]
+        assertSame(version.forge, version.loader(Loader.FORGE))
+        assertSame(version.neoforge, version.loader(Loader.NEOFORGE))
+        assertSame(version.fabric, version.loader(Loader.FABRIC))
+        assertThrows(IllegalArgumentException::class.java) { buildTargets("1") { neoforge("1.20.1", "21.1.206") } }
+        assertThrows(IllegalArgumentException::class.java) { buildTargets("1") { fabric("1.19.4", "0.18.2") } }
+        assertThrows(IllegalArgumentException::class.java) { buildTargets("1") { forge("1.21.10", "61.2.0") } }
     }
 
     @Test fun `test registration uses the declared module in every generation`() {

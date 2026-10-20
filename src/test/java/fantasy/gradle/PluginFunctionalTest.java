@@ -42,7 +42,7 @@ public class PluginFunctionalTest {
                         license = "All Rights Reserved"
                     }
                     val target = buildTargets("0.4") {
-                        %s(MinecraftRuntime("1.21.1", 21), "%s") {
+                        %s("1.21.1", "%s") {
                             requiredMod("custom_library", "2.0")
                         }
                     }.single()

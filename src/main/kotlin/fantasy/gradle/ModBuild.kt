@@ -1,6 +1,7 @@
 package fantasy.gradle
 
 import fantasy.gradle.minecraft.MinecraftVersions
+import fantasy.gradle.resources.packMetadata
 import org.gradle.api.Project
 import org.gradle.api.initialization.Settings
 import org.gradle.api.tasks.Sync

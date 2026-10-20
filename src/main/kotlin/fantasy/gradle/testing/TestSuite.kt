@@ -1,13 +1,12 @@
 package fantasy.gradle.testing
 
-import fantasy.gradle.Target
-import fantasy.gradle.Loader
-
 import fantasy.gradle.GenerateFiles
+import fantasy.gradle.Loader
 import fantasy.gradle.PrepareTestRun
-
+import fantasy.gradle.Target
 import fantasy.gradle.minecraft.MinecraftVersions
 import fantasy.gradle.resources.json
+import fantasy.gradle.resources.packMetadata
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.file.RegularFile
@@ -16,7 +15,6 @@ import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.*
-import javax.xml.parsers.DocumentBuilderFactory
 
 data class TestSuite(
     val module: TestModule,
@@ -146,35 +144,8 @@ private fun Project.verifyModTestReport(suite: TestSuite, taskName: String): Pro
             doLast {
                 if (run.state.executed && !run.state.skipped) {
                     val file = report.get().asFile
-                    val result = if (!file.isFile) {
-                        "FAIL — no report; see the task output"
-                    } else try {
-                        val factory = DocumentBuilderFactory.newInstance()
-                        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true)
-                        val document = factory.newDocumentBuilder().parse(file)
-                        val nodes = document.getElementsByTagName("testcase")
-                        val cases = (0 until nodes.length).map { nodes.item(it) as org.w3c.dom.Element }
-                        val unsuccessful = cases.filter {
-                            listOf("failure", "error", "skipped").any { tag -> it.getElementsByTagName(tag).length > 0 }
-                        }
-                        val complete = cases.map { it.getAttribute("name") }.let { it.size == expected.size && it.toSet() == expected }
-                        val passed = cases.size - unsuccessful.size
-                        val status = if (run.state.failure == null && complete && unsuccessful.isEmpty()) "PASS" else "FAIL"
-                        buildString {
-                            append("$status — $passed/${expected.size}")
-                            unsuccessful.forEach { case ->
-                                val message = listOf("failure", "error", "skipped").firstNotNullOf { tag ->
-                                    (case.getElementsByTagName(tag).item(0) as? org.w3c.dom.Element)?.getAttribute("message")
-                                }
-                                append("\n  ${case.getAttribute("name")}: $message")
-                            }
-                            if (!complete) append("\n  Report does not match the expected test list")
-                            if (run.state.failure != null && unsuccessful.isEmpty()) append("\n  Server task failed; see the task output")
-                        }
-                    } catch (_: Exception) {
-                        "FAIL — cannot read report; see $file"
-                    }
-                    logger.lifecycle("${target.name}: $result")
+                    val result = readTestReport(file, expected)
+                    logger.lifecycle("${target.name}: ${result.summary(serverFailed = run.state.failure != null)}")
                 }
             }
         }
@@ -189,17 +160,8 @@ private fun Project.verifyModTestReport(suite: TestSuite, taskName: String): Pro
         }
         doLast {
             val file = report.get().asFile
-            if (!file.isFile) throw GradleException("Tests did not produce their report: $file")
-            val factory = DocumentBuilderFactory.newInstance()
-            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true)
-            val document = factory.newDocumentBuilder().parse(file)
-            val cases = document.getElementsByTagName("testcase")
-            val actual = (0 until cases.length).map { (cases.item(it) as org.w3c.dom.Element).getAttribute("name") }
-            val failed = document.getElementsByTagName("failure").length + document.getElementsByTagName("error").length
-            val skipped = document.getElementsByTagName("skipped").length
-            if (actual.toSet() != expected || actual.size != expected.size || failed != 0 || skipped != 0) {
-                throw GradleException("Expected successful tests $expected; got $actual, failed $failed, skipped $skipped. See $file")
-            }
+            val result = readTestReport(file, expected)
+            if (!result.successful) throw GradleException("${result.summary()}\nSee $file")
         }
     }
     tasks.named("test") { dependsOn(taskName) }
