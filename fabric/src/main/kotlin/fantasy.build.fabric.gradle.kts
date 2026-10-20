@@ -1,3 +1,5 @@
+import fantasy.gradle.testing.*
+import fantasy.gradle.minecraft.MinecraftVersions
 import fantasy.gradle.*
 import fantasy.gradle.Target
 import org.gradle.api.tasks.bundling.AbstractArchiveTask
@@ -9,9 +11,7 @@ plugins {
 
 val target = extensions.getByType<Target>()
 require(target.loader == Loader.FABRIC) { "The Fabric adapter requires a Fabric target" }
-require(target.minecraft in setOf("1.20.1", "1.21.1", "1.21.10")) {
-    "No verified Fabric runtime profile for ${target.minecraft}"
-}
+MinecraftVersions[target.minecraft].loader(Loader.FABRIC)
 configureLibraryRepositories(target)
 
 dependencies {
@@ -49,3 +49,19 @@ publishing.publications.create<MavenPublication>("mavenJava") {
     from(components["java"])
 }
 registerReleaseExport(tasks.named<AbstractArchiveTask>("remapJar").flatMap { it.archiveFile })
+
+extensions.add("fantasyTestRuntime", TestRuntime { suite, tests, report ->
+    fabricApi.configureTests {
+        createSourceSet.set(false)
+        enableClientGameTests.set(false)
+    }
+    loom.mods {
+        register(suite.modId) { sourceSet(sourceSets.main.get()) }
+        register(suite.module.id) { sourceSet(tests) }
+    }
+    loom.runs.named("gameTest") {
+        source(tests)
+        runDir("build/run/test")
+        property("fabric-api.gametest.report-file", report.get().asFile.absolutePath)
+    }
+})

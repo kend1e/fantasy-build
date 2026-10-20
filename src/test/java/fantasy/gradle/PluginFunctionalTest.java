@@ -78,6 +78,13 @@ public class PluginFunctionalTest {
                     assertFalse(text.contains("fabric-api"));
                     assertTrue(text.contains("custom_library"));
                     assertFalse(text.contains("${"));
+                    if (loader.equals("fabric")) {
+                        assertNull(zip.getEntry("pack.mcmeta"));
+                    } else {
+                        var pack = com.google.gson.JsonParser.parseString(new String(zip.getInputStream(zip.getEntry("pack.mcmeta")).readAllBytes(), java.nio.charset.StandardCharsets.UTF_8)).getAsJsonObject().getAsJsonObject("pack");
+                        assertEquals(48, pack.get("pack_format").getAsInt());
+                        assertEquals(34, pack.getAsJsonObject("supported_formats").get("min_inclusive").getAsInt());
+                    }
                 }
                 BuildResult repeated = runner(root, "assemble", "--configuration-cache").build();
                 assertTrue(repeated.getOutput(), repeated.getOutput().contains("Reusing configuration cache"));

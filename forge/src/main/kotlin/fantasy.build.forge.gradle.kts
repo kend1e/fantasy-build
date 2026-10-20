@@ -1,3 +1,5 @@
+import fantasy.gradle.minecraft.MinecraftVersions
+import fantasy.gradle.testing.*
 import fantasy.gradle.*
 import fantasy.gradle.Target
 import fantasy.gradle.forge.ForgeRuntimeProfile
@@ -83,3 +85,18 @@ idea.module {
     isDownloadSources = true
     isDownloadJavadoc = true
 }
+
+extensions.add("fantasyTestRuntime", TestRuntime { suite, tests, report ->
+    minecraft.runs.named("gameTestServer") {
+        with(tests) {
+            if (MinecraftVersions[target.minecraft].loader(Loader.FORGE).tests == TestRegistration.FORGE_CONTAINER) {
+                mods.register(suite.modId) { source(sourceSets.main.get()) }
+                mods.register(suite.module.id) { source(tests) }
+            }
+            systemProperty("forge.enabledGameTestNamespaces", suite.module.id)
+            systemProperty("forge.logging.console.level", "info")
+            systemProperty(suite.module.reportProperty, report.get().asFile.absolutePath)
+            workingDir.set(layout.buildDirectory.dir("run/test"))
+        }
+    }
+})

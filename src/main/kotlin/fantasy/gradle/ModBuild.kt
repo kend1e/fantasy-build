@@ -1,5 +1,6 @@
 package fantasy.gradle
 
+import fantasy.gradle.minecraft.MinecraftVersions
 import org.gradle.api.Project
 import org.gradle.api.initialization.Settings
 import org.gradle.api.tasks.Sync
@@ -13,7 +14,7 @@ fun Settings.includeModTargets(targets: List<Target>) {
 fun Project.configureMod(
     metadata: ModMetadata,
     target: Target,
-    templatesDirectory: org.gradle.api.file.Directory = layout.projectDirectory.dir("src/main/templates"),
+    templatesDirectory: org.gradle.api.file.Directory = modTemplates(target),
 ) {
     metadata.validate(target)
     pluginManager.apply("fantasy.build.platform")
@@ -25,6 +26,12 @@ fun Project.configureMod(
     extensions.configure<PlatformExtension> {
         javaVersion.set(target.java)
         archiveName.set(metadata.id)
+    }
+    if (target.loader != Loader.FABRIC) extensions.configure<ResourcesExtension> {
+        generate("generatePackMetadata") {
+            contents.set(mapOf("pack.mcmeta" to MinecraftVersions[target.minecraft].packMetadata(metadata.name)))
+            outputDirectory.set(layout.buildDirectory.dir("generated/resources/pack"))
+        }
     }
     if (target.loader == Loader.FABRIC) {
         val template = providers.fileContents(templatesDirectory.file("fabric.mod.json")).asText
@@ -38,10 +45,16 @@ fun Project.configureMod(
         val values = metadata.templateValues(target)
         val templates = tasks.register<Sync>("generateModMetadata") {
             inputs.properties(values)
-            from(templatesDirectory)
+            from(templatesDirectory) { exclude("pack.mcmeta") }
             into(layout.buildDirectory.dir("generated/resources/metadata"))
             expand(values)
         }
         extensions.configure<ResourcesExtension> { sources.from(templates) }
     }
+}
+
+private fun Project.modTemplates(target: Target): org.gradle.api.file.Directory {
+    val loader = rootProject.layout.projectDirectory.dir("loaders/${target.loader.id}")
+    return listOf(loader.dir("${target.minecraft}/src/main/templates"), loader.dir("src/main/templates"))
+        .firstOrNull { it.asFile.isDirectory } ?: layout.projectDirectory.dir("src/main/templates")
 }

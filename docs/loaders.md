@@ -29,17 +29,14 @@ with the loader's native API.
 
 The adapters select the installable artifact: Loom's `remapJar`, Renamer's `renameJar`
 for SRG Forge, and `jar` for official-name Forge and NeoForge. Mod-specific sources,
-mixins, processors, dependencies and test scenarios stay in the mod. Existing game-test
-integration can configure the native run models directly.
+mixins, processors, dependencies and test scenarios stay in the mod. `configureModTests` connects a declared test suite through each adapter’s native run model.
 
 ## Target options
 
 ```kotlin
-forge(MinecraftRuntime("1.20.1", 17), "47.3.12") {
-    names = ForgeNames.SRG
-}
-fabric(MinecraftRuntime("1.20.1", 17), "0.16.7") {
-    fabricApi("0.92.2+1.20.1")
+forge("1.20.1")
+fabric("1.20.1") {
+    fabricApi()
     dataGeneration = true
 }
 ```
@@ -61,7 +58,7 @@ a separate EventBus 7 profile. Native APIs remain available for version-specific
 `./gradlew check` validates all adapter plugins, runs the core tests, and configures
 minimal consumers without GeckoLib/Cloth. The latter use the invoking Gradle user home
 for cached toolchains and currently run offline; prime the Minecraft caches before running.
-Armor's separate matrix builds release JARs and runs the actual server scenarios.
+The mod matrices build release JARs and run the actual server scenarios.
 Client rendering is not covered by these checks.
 
 Configuration cache is disabled for building this repository: precompiled accessor

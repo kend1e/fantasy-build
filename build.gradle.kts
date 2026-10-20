@@ -37,6 +37,10 @@ tasks.named("check") {
 
 gradlePlugin {
     plugins {
+        register("lifecycle") {
+            id = "fantasy.build.lifecycle"
+            implementationClass = "fantasy.gradle.LifecyclePlugin"
+        }
         register("platform") {
             id = "fantasy.build.platform"
             implementationClass = "fantasy.gradle.PlatformPlugin"
