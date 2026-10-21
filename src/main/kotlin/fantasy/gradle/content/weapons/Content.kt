@@ -1,7 +1,8 @@
 package fantasy.gradle.content.weapons
 
 import fantasy.gradle.resources.validateResourceId
-import fantasy.gradle.resources.validatePattern
+import fantasy.gradle.content.MaterialDefinition
+import fantasy.gradle.content.ShapedRecipe
 
 @DslMarker
 annotation class ContentDsl
@@ -10,14 +11,6 @@ enum class LargeModel(val parent: String) {
     DOUBLE("handheld_large_2x"), TRIPLE("handheld_large_3x")
 }
 
-data class ShapedRecipe(val pattern: List<String>, val ingredients: Map<Char, String>, val count: Int = 1) {
-    init {
-        validatePattern(pattern, ingredients.keys.map(Char::toString).toSet(), count)
-        ingredients.values.forEach(::validateResourceId)
-    }
-}
-
-data class MaterialDefinition(val id: String, val recipe: ShapedRecipe)
 data class WeaponDefinition(val id: String, val template: String, val base: String, val largeModel: LargeModel?)
 data class ContentCatalog(
     val namespace: String, val tabIcon: String, val addition: String, val tab: String,

@@ -1,7 +1,7 @@
 package fantasy.gradle
 
 import com.google.gson.JsonParser
-import fantasy.gradle.content.weapons.ShapedRecipe
+import fantasy.gradle.content.ShapedRecipe
 import fantasy.gradle.content.weapons.contentCatalog
 import fantasy.gradle.content.weapons.contentResources
 import fantasy.gradle.resources.translations

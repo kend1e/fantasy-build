@@ -16,8 +16,9 @@ internal fun modelResources(namespace: String, materials: List<String>, armor: L
             }
         }
     }
-    if (itemDefinitions) {
-        for (id in materials) put("$assets/items/$id.json", json(ItemDefinition(modelReference(namespace, id))))
+    for (id in materials) {
+        put("$assets/models/item/$id.json", json(ItemModelResource(textures = mapOf("layer0" to "$namespace:item/$id"))))
+        if (itemDefinitions) put("$assets/items/$id.json", json(ItemDefinition(modelReference(namespace, id))))
     }
 }
 

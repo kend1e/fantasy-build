@@ -24,8 +24,7 @@ fun contentResources(content: ContentCatalog, languages: TranslationCatalog, min
         ))
         for (material in content.materials) {
             put("$assets/models/item/${material.id}.json", model(material.id, "item/generated"))
-            put("$recipes/${material.id}.json", shapedRecipe(ShapedRecipeDefinition(material.id, material.recipe.pattern,
-                material.recipe.ingredients.mapKeys { it.key.toString() }, "${content.namespace}:${material.id}", material.recipe.count), format))
+            put("$recipes/${material.id}.json", shapedRecipe(material.craftingRecipe(content.namespace), format))
         }
         for (weapon in content.weapons) {
             put("$assets/models/item/${weapon.id}.json", model(weapon.id, "item/handheld"))
