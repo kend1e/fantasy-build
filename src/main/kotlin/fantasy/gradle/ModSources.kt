@@ -10,7 +10,6 @@ fun Project.configureModSources(coreProject: String = ":core") {
         sources.from(root.dir("minecraft/common/src/main/java"))
         sources.from(root.dir("minecraft/${target.minecraft}/src/main/java"))
         sources.from(root.dir("loaders/${target.loader.id}/src/main/java"))
-        sources.from(root.dir("loaders/${target.loader.id}/${target.minecraft}/src/main/java"))
     }
     for (kind in listOf("Sources", "Resources")) {
         dependencies.add("shared${kind}Dependencies", dependencies.project(mapOf("path" to coreProject, "configuration" to "shared$kind")))
