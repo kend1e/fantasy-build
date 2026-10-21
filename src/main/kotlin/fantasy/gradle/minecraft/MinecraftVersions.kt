@@ -41,6 +41,13 @@ object MinecraftVersions {
                     geckolib = "4.2",
                     names = ForgeNames.SRG,
                 ),
+                fabric = FabricProfile(
+                    version = "0.16.7",
+                    tests = TestRegistration.FABRIC_VANILLA,
+                    geckolib = "4.2",
+                    fabricApi = "0.87.2+1.19.4",
+                    clothConfig = "10.1.135",
+                ),
             ),
         ),
         MinecraftVersion(
@@ -118,6 +125,18 @@ object MinecraftVersions {
             resourcePackFormat = PackFormat(major = 69),
             structures = "structure",
             loaders = LoaderProfiles(
+                forge = ForgeProfile(
+                    version = "60.1.0",
+                    tests = TestRegistration.FORGE_FUNCTIONS,
+                    geckolib = "5.3-alpha-3",
+                    classicLaunch = false,
+                    testServerConfigDirectory = "gametestserver/gametestworld/serverconfig",
+                ),
+                neoforge = NeoForgeProfile(
+                    version = "21.10.64",
+                    tests = TestRegistration.NEOFORGE_FUNCTIONS,
+                    geckolib = "5.3-alpha-3",
+                ),
                 fabric = FabricProfile(
                     version = "0.18.4",
                     tests = TestRegistration.FABRIC_REGISTRY,
@@ -139,7 +158,19 @@ object MinecraftVersions {
                     tests = TestRegistration.FORGE_FUNCTIONS,
                     geckolib = "5.4.5",
                     classicLaunch = false,
-                    serverConfigDirectory = "gametestserver/gametestworld/serverconfig",
+                    testServerConfigDirectory = "gametestserver/gametestworld/serverconfig",
+                ),
+                neoforge = NeoForgeProfile(
+                    version = "21.11.48",
+                    tests = TestRegistration.NEOFORGE_FUNCTIONS,
+                    geckolib = "5.4.5",
+                ),
+                fabric = FabricProfile(
+                    version = "0.18.4",
+                    tests = TestRegistration.FABRIC_REGISTRY,
+                    geckolib = "5.4.5",
+                    fabricApi = "0.141.6+1.21.11",
+                    clothConfig = "21.11.160",
                 ),
             ),
         ),

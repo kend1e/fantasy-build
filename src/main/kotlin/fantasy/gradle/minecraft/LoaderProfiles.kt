@@ -8,7 +8,7 @@ sealed interface LoaderProfile {
     val version: String
     val tests: TestRegistration
     val geckolib: String
-    val serverConfigDirectory: String
+    val testServerConfigDirectory: String
 }
 
 data class ForgeProfile(
@@ -17,7 +17,7 @@ data class ForgeProfile(
     override val geckolib: String,
     val names: ForgeNames = ForgeNames.OFFICIAL,
     val classicLaunch: Boolean = true,
-    override val serverConfigDirectory: String = "world/serverconfig",
+    override val testServerConfigDirectory: String = "world/serverconfig",
 ) : LoaderProfile
 
 data class NeoForgeProfile(
@@ -25,7 +25,7 @@ data class NeoForgeProfile(
     override val tests: TestRegistration,
     override val geckolib: String,
 ) : LoaderProfile {
-    override val serverConfigDirectory = "config"
+    override val testServerConfigDirectory = "config"
 }
 
 data class FabricProfile(
@@ -35,7 +35,7 @@ data class FabricProfile(
     val fabricApi: String,
     val clothConfig: String,
 ) : LoaderProfile {
-    override val serverConfigDirectory = "config"
+    override val testServerConfigDirectory = "config"
 }
 
 data class LoaderProfiles(

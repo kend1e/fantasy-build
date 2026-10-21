@@ -56,6 +56,6 @@ fun Project.configureMod(
 
 private fun Project.modTemplates(target: Target): org.gradle.api.file.Directory {
     val loader = rootProject.layout.projectDirectory.dir("loaders/${target.loader.id}")
-    return listOf(loader.dir("${target.minecraft}/src/main/templates"), loader.dir("src/main/templates"))
-        .firstOrNull { it.asFile.isDirectory } ?: layout.projectDirectory.dir("src/main/templates")
+    val platform = layout.projectDirectory.dir("src/main/templates")
+    return platform.takeIf { it.file(target.loader.metadataFile).asFile.isFile } ?: loader.dir("src/main/templates")
 }

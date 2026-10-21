@@ -64,8 +64,8 @@ class MinecraftCatalogTest {
         assertSame(version.neoforge, version.loader(Loader.NEOFORGE))
         assertSame(version.fabric, version.loader(Loader.FABRIC))
         assertThrows(IllegalArgumentException::class.java) { buildTargets("1") { neoforge("1.20.1", "21.1.206") } }
-        assertThrows(IllegalArgumentException::class.java) { buildTargets("1") { fabric("1.19.4", "0.18.2") } }
-        assertThrows(IllegalArgumentException::class.java) { buildTargets("1") { forge("1.21.10", "61.2.0") } }
+        assertThrows(IllegalArgumentException::class.java) { buildTargets("1") { neoforge("1.19.4", "21.1.206") } }
+        assertThrows(IllegalArgumentException::class.java) { buildTargets("1") { forge("1.22", "61.2.0") } }
     }
 
     @Test fun `test registration uses the declared module in every generation`() {

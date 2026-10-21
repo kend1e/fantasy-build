@@ -67,6 +67,10 @@ public class PluginFunctionalTest {
                         ${mod_dependencies}
                         """);
                 }
+                if (!sharedTemplates) {
+                    write(root, "loaders/" + loader + "/src/main/templates/" + metadataPath,
+                        "This shared template must not override platform metadata");
+                }
                 runner(root, "assemble", "--configuration-cache").build();
                 Path jar = root.resolve("build/libs/fantasy_weapons-0.4-1.21.1.jar");
                 try (ZipFile zip = new ZipFile(jar.toFile())) {

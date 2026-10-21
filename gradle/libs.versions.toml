@@ -1,8 +1,8 @@
 [versions]
-loom = "1.13.6"
+loom = "1.15.4"
 forgeGradle = "7.0.29"
 renamer = "1.1.2"
-moddev = "2.0.107"
+moddev = "2.0.148"
 
 [libraries]
 loom = { module = "net.fabricmc:fabric-loom", version.ref = "loom" }

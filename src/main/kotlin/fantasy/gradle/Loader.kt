@@ -2,8 +2,10 @@ package fantasy.gradle
 
 import java.io.Serializable
 
-enum class Loader(val id: String) {
-    FORGE("forge"), NEOFORGE("neoforge"), FABRIC("fabric");
+enum class Loader(val id: String, val metadataFile: String) {
+    FORGE("forge", "META-INF/mods.toml"),
+    NEOFORGE("neoforge", "META-INF/neoforge.mods.toml"),
+    FABRIC("fabric", "fabric.mod.json");
 
     fun minimumVersion(version: String): String = when (this) {
         FABRIC -> ">=$version"

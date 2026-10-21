@@ -29,10 +29,10 @@ fun validateTestCatalog(cases: List<TestCase>, targets: List<Target>) {
 }
 
 enum class TestRegistration {
-    FORGE_CONTAINER, FORGE_COMPONENTS, NEOFORGE, FABRIC_VANILLA, FORGE_FUNCTIONS, FABRIC_REGISTRY;
+    FORGE_CONTAINER, FORGE_COMPONENTS, NEOFORGE, FABRIC_VANILLA, FORGE_FUNCTIONS, NEOFORGE_FUNCTIONS, FABRIC_REGISTRY;
 
     fun annotation(module: TestModule): String = when (this) {
-        FORGE_FUNCTIONS -> error("Forge function tests do not use annotations")
+        FORGE_FUNCTIONS, NEOFORGE_FUNCTIONS -> error("Forge function tests do not use annotations")
         FABRIC_REGISTRY -> "@net.fabricmc.fabric.api.gametest.v1.GameTest(maxTicks = 100)"
         NEOFORGE -> "@GameTest(template = \"empty\", templateNamespace = \"${module.id}\")"
         FORGE_CONTAINER -> "@GameTest(template = \"empty\", templateNamespace = \"${module.id}\")"
@@ -52,25 +52,28 @@ enum class TestRegistration {
         FORGE_COMPONENTS -> "${module.id}.$id"
         FABRIC_VANILLA -> "${module.className.lowercase()}.$id"
         FABRIC_REGISTRY -> "${module.id}:${module.functionPrefix}_$id"
-        FORGE_FUNCTIONS -> "${module.id}:$id"
+        FORGE_FUNCTIONS, NEOFORGE_FUNCTIONS -> "${module.id}:$id"
     }
+
+    val functions get() = this in setOf(FORGE_FUNCTIONS, NEOFORGE_FUNCTIONS)
 
     val fabric get() = this in setOf(FABRIC_VANILLA, FABRIC_REGISTRY)
 
     val additionalReportNames: Set<String> get() = when (this) {
-        FORGE_FUNCTIONS, FABRIC_REGISTRY -> setOf("minecraft:always_pass")
+        FORGE_FUNCTIONS, NEOFORGE_FUNCTIONS, FABRIC_REGISTRY -> setOf("minecraft:always_pass")
         else -> emptySet()
     }
 
     fun entrypoint(cases: List<TestCase>, module: TestModule): String {
         require(cases.isNotEmpty() && cases.map { it.id }.distinct().size == cases.size) { "Test IDs must be nonempty and unique" }
-        if (this == FORGE_FUNCTIONS) return buildString {
+        if (functions) return buildString {
+            val neo = this@TestRegistration == NEOFORGE_FUNCTIONS
             appendLine("package ${module.packageName};")
             appendLine()
             appendLine("import net.minecraft.gametest.framework.GameTestHelper;")
             appendLine("import net.minecraft.core.registries.Registries;")
-            appendLine("import net.minecraftforge.registries.DeferredRegister;")
-            appendLine("import net.minecraftforge.eventbus.api.bus.BusGroup;")
+            appendLine("import ${if (neo) "net.neoforged.neoforge" else "net.minecraftforge"}.registries.DeferredRegister;")
+            appendLine(if (neo) "import net.neoforged.bus.api.IEventBus;" else "import net.minecraftforge.eventbus.api.bus.BusGroup;")
             appendLine("import java.util.function.Consumer;")
             appendLine()
             appendLine("public final class ${module.className} {")
@@ -81,7 +84,7 @@ enum class TestRegistration {
                 appendLine("        FUNCTIONS.register(\"${case.id}\", () -> ${case.owner}::run);")
             }
             appendLine("    }")
-            appendLine("    public static void register(BusGroup bus) { FUNCTIONS.register(bus); }")
+            appendLine("    public static void register(${if (neo) "IEventBus" else "BusGroup"} bus) { FUNCTIONS.register(bus); }")
             appendLine("    private ${module.className}() {}")
             appendLine("}")
         }

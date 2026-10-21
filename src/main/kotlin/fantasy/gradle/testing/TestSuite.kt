@@ -55,12 +55,12 @@ fun Project.configureModTests(suite: TestSuite): SourceSet {
                     package ${module.packageName};
                     @$loaderPackage("${module.id}")
                     public final class TestMod {
-                        public TestMod(${if (registration == TestRegistration.FORGE_FUNCTIONS) "net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext context" else ""}) throws Exception {
+                        public TestMod(${if (registration == TestRegistration.FORGE_FUNCTIONS) "net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext context" else if (registration == TestRegistration.NEOFORGE_FUNCTIONS) "net.neoforged.bus.api.IEventBus bus" else ""}) throws Exception {
                             String report = System.getProperty("${module.reportProperty}");
                             if (report == null) throw new IllegalStateException("Missing test report path");
                             net.minecraft.gametest.framework.GlobalTestReporter.replaceWith(
                                 new net.minecraft.gametest.framework.JUnitLikeTestReporter(new java.io.File(report)));
-                            ${if (registration == TestRegistration.FORGE_FUNCTIONS) "${module.className}.register(context.getModBusGroup());" else ""}
+                            ${if (registration == TestRegistration.FORGE_FUNCTIONS) "${module.className}.register(context.getModBusGroup());" else if (registration == TestRegistration.NEOFORGE_FUNCTIONS) "${module.className}.register(bus);" else ""}
                         }
                     }
                 """.trimIndent())
@@ -89,11 +89,11 @@ fun Project.configureModTests(suite: TestSuite): SourceSet {
                 """.trimIndent())
             }
             putAll(suite.resources)
-            if (registration == TestRegistration.FORGE_FUNCTIONS) {
+            if (registration.functions) {
                 cases.forEach { case ->
                     put("data/${module.id}/test_instance/${case.id}.json", json(mapOf(
                         "type" to "minecraft:function", "function" to "${module.id}:${case.id}",
-                        "environment" to "minecraft:default", "structure" to "forge:empty3x3x3", "max_ticks" to 100,
+                        "environment" to "minecraft:default", "structure" to "${module.id}:empty", "max_ticks" to 100,
                     )))
                 }
             }
