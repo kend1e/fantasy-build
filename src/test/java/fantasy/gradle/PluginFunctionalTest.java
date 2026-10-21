@@ -93,65 +93,64 @@ public class PluginFunctionalTest {
     }
 
     @Test
-    public void independentModsShareSourcesAndGenerateResourcesWithConfigurationCache() throws IOException {
-        for (String modId : new String[] {"fantasy_armor", "fantasy_weapons"}) {
-            Path root = temporary.newFolder(modId).toPath();
-            write(root, "settings.gradle.kts", "rootProject.name = \"consumer\"\ninclude(\"core\", \"platform\")\n");
-            write(root, "core/build.gradle.kts", """
-                plugins { id("fantasy.build.shared") }
-                fantasyPlatform { javaVersion.set(21) }
-                fantasyResources {
-                    generate("generateDefaults") { contents.put("defaults.json", "{}") }
-                }
-                """);
-            write(root, "core/src/main/java/example/SharedValue.java", "package example; public class SharedValue {}\n");
-            write(root, "platform/build.gradle.kts", """
-                plugins {
-                    id("fantasy.build.resources")
-                    id("fantasy.build.platform")
-                }
-                version = "1.0"
-                fantasyPlatform {
-                    javaVersion.set(21)
-                    archiveName.set("%s")
-                    sources.from(layout.projectDirectory.dir("extra/java"))
-                }
-                val variant = providers.gradleProperty("variant").orElse("first")
-                fantasyResources {
-                    sources.from(layout.projectDirectory.dir("assets"))
-                    generate("generateContentResources") {
-                        contents.set(variant.map { mapOf("assets/%s/$it.txt" to it) })
-                    }
-                }
-                dependencies {
-                    add("sharedSourcesDependencies", project(mapOf("path" to ":core", "configuration" to "sharedSources")))
-                    add("sharedResourcesDependencies", project(mapOf("path" to ":core", "configuration" to "sharedResources")))
-                }
-                """.formatted(modId, modId));
-            write(root, "platform/extra/java/example/Consumer.java", "package example; public class Consumer extends SharedValue {}\n");
-            write(root, "platform/assets/static.txt", "retained");
-
-            BuildResult first = runner(root, ":platform:assemble", "--configuration-cache").build();
-            assertEquals(TaskOutcome.SUCCESS, first.task(":platform:generateContentResources").getOutcome());
-            Path jar = root.resolve("platform/build/libs/" + modId + "-1.0.jar");
-            try (ZipFile zip = new ZipFile(jar.toFile())) {
-                assertNotNull(zip.getEntry("example/SharedValue.class"));
-                assertNotNull(zip.getEntry("example/Consumer.class"));
-                assertNotNull(zip.getEntry("defaults.json"));
-                assertNotNull(zip.getEntry("static.txt"));
-                assertNotNull(zip.getEntry("assets/" + modId + "/first.txt"));
-                assertTrue(zip.stream().allMatch(entry -> entry.getTimeLocal().getYear() == 1980));
+    public void sharesSourcesAndGeneratesResourcesWithConfigurationCache() throws IOException {
+        String modId = "example_equipment";
+        Path root = temporary.newFolder(modId).toPath();
+        write(root, "settings.gradle.kts", "rootProject.name = \"consumer\"\ninclude(\"core\", \"platform\")\n");
+        write(root, "core/build.gradle.kts", """
+            plugins { id("fantasy.build.shared") }
+            fantasyPlatform { javaVersion.set(21) }
+            fantasyResources {
+                generate("generateDefaults") { contents.put("defaults.json", "{}") }
             }
-            BuildResult second = runner(root, ":platform:assemble", "--configuration-cache").build();
-            assertTrue(second.getOutput(), second.getOutput().contains("Reusing configuration cache"));
-            assertEquals(TaskOutcome.UP_TO_DATE, second.task(":platform:generateContentResources").getOutcome());
+            """);
+        write(root, "core/src/main/java/example/SharedValue.java", "package example; public class SharedValue {}\n");
+        write(root, "platform/build.gradle.kts", """
+            plugins {
+                id("fantasy.build.resources")
+                id("fantasy.build.platform")
+            }
+            version = "1.0"
+            fantasyPlatform {
+                javaVersion.set(21)
+                archiveName.set("%s")
+                sources.from(layout.projectDirectory.dir("extra/java"))
+            }
+            val variant = providers.gradleProperty("variant").orElse("first")
+            fantasyResources {
+                sources.from(layout.projectDirectory.dir("assets"))
+                generate("generateContentResources") {
+                    contents.set(variant.map { mapOf("assets/%s/$it.txt" to it) })
+                }
+            }
+            dependencies {
+                add("sharedSourcesDependencies", project(mapOf("path" to ":core", "configuration" to "sharedSources")))
+                add("sharedResourcesDependencies", project(mapOf("path" to ":core", "configuration" to "sharedResources")))
+            }
+            """.formatted(modId, modId));
+        write(root, "platform/extra/java/example/Consumer.java", "package example; public class Consumer extends SharedValue {}\n");
+        write(root, "platform/assets/static.txt", "retained");
 
-            runner(root, ":platform:assemble", "-Pvariant=second", "--configuration-cache").build();
-            Path generated = root.resolve("platform/build/generated/resources/generateContentResources/assets/" + modId);
-            assertFalse(Files.exists(generated.resolve("first.txt")));
-            assertEquals("second", Files.readString(generated.resolve("second.txt")));
-            assertEquals("retained", Files.readString(root.resolve("platform/assets/static.txt")));
+        BuildResult first = runner(root, ":platform:assemble", "--configuration-cache").build();
+        assertEquals(TaskOutcome.SUCCESS, first.task(":platform:generateContentResources").getOutcome());
+        Path jar = root.resolve("platform/build/libs/" + modId + "-1.0.jar");
+        try (ZipFile zip = new ZipFile(jar.toFile())) {
+            assertNotNull(zip.getEntry("example/SharedValue.class"));
+            assertNotNull(zip.getEntry("example/Consumer.class"));
+            assertNotNull(zip.getEntry("defaults.json"));
+            assertNotNull(zip.getEntry("static.txt"));
+            assertNotNull(zip.getEntry("assets/" + modId + "/first.txt"));
+            assertTrue(zip.stream().allMatch(entry -> entry.getTimeLocal().getYear() == 1980));
         }
+        BuildResult second = runner(root, ":platform:assemble", "--configuration-cache").build();
+        assertTrue(second.getOutput(), second.getOutput().contains("Reusing configuration cache"));
+        assertEquals(TaskOutcome.UP_TO_DATE, second.task(":platform:generateContentResources").getOutcome());
+
+        runner(root, ":platform:assemble", "-Pvariant=second", "--configuration-cache").build();
+        Path generated = root.resolve("platform/build/generated/resources/generateContentResources/assets/" + modId);
+        assertFalse(Files.exists(generated.resolve("first.txt")));
+        assertEquals("second", Files.readString(generated.resolve("second.txt")));
+        assertEquals("retained", Files.readString(root.resolve("platform/assets/static.txt")));
     }
 
     @Test
