@@ -37,6 +37,30 @@ class WeaponResourcesTest {
         }
     }
 
+    @Test fun `modern item definitions select large models only in hand contexts`() {
+        for (version in listOf("1.21.10", "1.21.11")) {
+            val files = contentResources(content, languages, version)
+            val model = JsonParser.parseString(files.getValue("assets/example/items/sword.json")).asJsonObject.getAsJsonObject("model")
+            assertEquals("minecraft:select", model.get("type").asString)
+            assertEquals("minecraft:display_context", model.get("property").asString)
+            val case = model.getAsJsonArray("cases").single().asJsonObject
+            assertEquals(setOf("firstperson_lefthand", "firstperson_righthand", "thirdperson_lefthand", "thirdperson_righthand"),
+                case.getAsJsonArray("when").map { it.asString }.toSet())
+            assertEquals("example:item/sword_large", case.getAsJsonObject("model").get("model").asString)
+            assertEquals("example:item/sword", model.getAsJsonObject("fallback").get("model").asString)
+            val material = JsonParser.parseString(files.getValue("assets/example/items/crystal.json")).asJsonObject.getAsJsonObject("model")
+            assertEquals("example:item/crystal", material.get("model").asString)
+            val plain = content.copy(weapons = content.weapons.map { it.copy(largeModel = null) })
+            val plainFiles = contentResources(plain, languages, version)
+            val plainModel = JsonParser.parseString(plainFiles.getValue("assets/example/items/sword.json")).asJsonObject.getAsJsonObject("model")
+            assertEquals("minecraft:model", plainModel.get("type").asString)
+            assertFalse(plainFiles.containsKey("assets/example/models/item/sword_large.json"))
+        }
+        for (version in listOf("1.19.4", "1.20.1", "1.21.1")) {
+            assertFalse(contentResources(content, languages, version).keys.any { "/items/" in it })
+        }
+    }
+
     @Test fun `duplicate items and invalid patterns are rejected`() {
         assertThrows(IllegalArgumentException::class.java) {
             contentCatalog("example", "sword", "minecraft:stick", "minecraft:stone", tab = "weapons") {

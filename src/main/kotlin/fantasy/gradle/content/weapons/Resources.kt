@@ -33,6 +33,24 @@ fun contentResources(content: ContentCatalog, languages: TranslationCatalog, min
             }
             put("$recipes/${weapon.id}.json", upgradeRecipe(weapon.template, weapon.base, content.addition, "${content.namespace}:${weapon.id}", format))
         }
+        if (version.resources.itemModels == ItemModelFormat.ITEM_DEFINITIONS) {
+            fun reference(id: String) = mapOf("type" to "minecraft:model", "model" to "${content.namespace}:item/$id")
+            for (material in content.materials) {
+                put("$assets/items/${material.id}.json", json(mapOf("model" to reference(material.id))))
+            }
+            for (weapon in content.weapons) {
+                val model = if (weapon.largeModel == null) reference(weapon.id) else mapOf(
+                    "type" to "minecraft:select",
+                    "property" to "minecraft:display_context",
+                    "cases" to listOf(mapOf(
+                        "when" to listOf("firstperson_lefthand", "firstperson_righthand", "thirdperson_lefthand", "thirdperson_righthand"),
+                        "model" to reference("${weapon.id}_large"),
+                    )),
+                    "fallback" to reference(weapon.id),
+                )
+                put("$assets/items/${weapon.id}.json", json(mapOf("model" to model)))
+            }
+        }
         if (version.resources.swordTags) put("data/minecraft/tags/item/swords.json", json(mapOf(
             "replace" to false, "values" to content.weapons.map { "${content.namespace}:${it.id}" },
         )))
