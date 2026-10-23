@@ -37,5 +37,8 @@ Each generator owns its output directory; generated files never belong in source
 `sharedResources`. Consumers add project dependencies to `sharedSourcesDependencies` and
 `sharedResourcesDependencies`, selecting those outgoing configurations.
 
-Run `./gradlew check` for plugin validation and functional tests. Loader adapters, content
-definitions and game scenarios currently stay in the consuming mod. Nothing is published yet.
+See [mod metadata and target configuration](docs/configuration.md) for the shared target DSL.
+
+Run `./gradlew check` for plugin validation and functional tests. See [loader adapters](docs/loaders.md)
+for platform setup and integration-test prerequisites. Content definitions and game scenarios stay
+in the consuming mod. No plugin artifacts are published yet.
