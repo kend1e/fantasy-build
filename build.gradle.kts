@@ -13,7 +13,7 @@ repositories {
     maven("https://maven.minecraftforge.net/")
 }
 
-kotlin { jvmToolchain(21) }
+kotlin { jvmToolchain(25) }
 
 dependencies {
     implementation("com.google.code.gson:gson:2.10.1")

@@ -174,6 +174,72 @@ object MinecraftVersions {
                 ),
             ),
         ),
+        MinecraftVersion(
+            runtime = MinecraftRuntime(id = "26.1.2", java = 25),
+            obfuscated = false,
+            resources = itemDefinitionResources.copy(recipes = itemDefinitionResources.recipes.copy(
+                upgrade = UpgradeRecipeMethod.SmithingTransform(ResultEncoding.ID_FIELD),
+            )),
+            dataPackFormat = PackFormat(101, 1),
+            resourcePackFormat = PackFormat(84, 0),
+            structures = "structure",
+            loaders = LoaderProfiles(
+                forge = ForgeProfile(
+                    version = "64.1.5", tests = TestRegistration.FORGE_FUNCTIONS,
+                    classicLaunch = false,
+                    testServerConfigDirectory = "gametestserver/gametestworld/serverconfig",
+                ),
+                neoforge = NeoForgeProfile(version = "26.1.2.122", tests = TestRegistration.NEOFORGE_FUNCTIONS),
+                fabric = FabricProfile(
+                    version = "0.20.1", tests = TestRegistration.FABRIC_REGISTRY,
+                    fabricApi = "0.155.3+26.1.2", clothConfig = "26.1.154",
+                ),
+            ),
+        ),
+        MinecraftVersion(
+            runtime = MinecraftRuntime(id = "26.2", java = 25),
+            obfuscated = false,
+            resources = itemDefinitionResources.copy(recipes = itemDefinitionResources.recipes.copy(
+                upgrade = UpgradeRecipeMethod.SmithingTransform(ResultEncoding.ID_FIELD),
+            )),
+            dataPackFormat = PackFormat(107, 1),
+            resourcePackFormat = PackFormat(88, 0),
+            structures = "structure",
+            loaders = LoaderProfiles(
+                forge = ForgeProfile(
+                    version = "65.1.5", tests = TestRegistration.FORGE_FUNCTIONS,
+                    classicLaunch = false,
+                    testServerConfigDirectory = "gametestserver/gametestworld/serverconfig",
+                ),
+                neoforge = NeoForgeProfile(version = "26.2.0.93", tests = TestRegistration.NEOFORGE_FUNCTIONS),
+                fabric = FabricProfile(
+                    version = "0.20.1", tests = TestRegistration.FABRIC_REGISTRY,
+                    fabricApi = "0.161.0+26.2", clothConfig = "26.2.155",
+                ),
+            ),
+        ),
+        MinecraftVersion(
+            runtime = MinecraftRuntime(id = "26.3", java = 25),
+            obfuscated = false,
+            resources = itemDefinitionResources.copy(recipes = itemDefinitionResources.recipes.copy(
+                upgrade = UpgradeRecipeMethod.SmithingTransform(ResultEncoding.ID_FIELD),
+            )),
+            dataPackFormat = PackFormat(121, 0),
+            resourcePackFormat = PackFormat(97, 1),
+            structures = "structure",
+            loaders = LoaderProfiles(
+                forge = ForgeProfile(
+                    version = "66.1.0", tests = TestRegistration.FORGE_FUNCTIONS,
+                    classicLaunch = false,
+                    testServerConfigDirectory = "gametestserver/gametestworld/serverconfig",
+                ),
+                neoforge = NeoForgeProfile(version = "26.3.0.95", tests = TestRegistration.NEOFORGE_FUNCTIONS),
+                fabric = FabricProfile(
+                    version = "0.20.1", tests = TestRegistration.FABRIC_REGISTRY,
+                    fabricApi = "0.165.0+26.3", clothConfig = "26.3.159",
+                ),
+            ),
+        ),
     ).associateBy { it.runtime.id }
 
     operator fun get(id: String): MinecraftVersion =

@@ -6,7 +6,7 @@ repositories {
     maven("https://maven.minecraftforge.net/")
     mavenCentral()
 }
-kotlin { jvmToolchain(21) }
+kotlin { jvmToolchain(25) }
 dependencies {
     implementation(project(":"))
     implementation(libs.forgeGradle)

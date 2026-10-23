@@ -5,7 +5,7 @@ repositories {
     gradlePluginPortal()
     mavenCentral()
 }
-kotlin { jvmToolchain(21) }
+kotlin { jvmToolchain(25) }
 dependencies {
     implementation(project(":"))
     implementation(libs.moddev)

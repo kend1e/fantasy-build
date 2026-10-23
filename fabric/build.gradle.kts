@@ -6,8 +6,15 @@ repositories {
     gradlePluginPortal()
     mavenCentral()
 }
-kotlin { jvmToolchain(21) }
+kotlin { jvmToolchain(25) }
 dependencies {
     implementation(project(":"))
     implementation(libs.loom)
+}
+
+gradlePlugin {
+    plugins.register("fabric") {
+        id = "fantasy.build.fabric"
+        implementationClass = "fantasy.gradle.fabric.FabricPlugin"
+    }
 }

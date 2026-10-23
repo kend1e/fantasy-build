@@ -7,14 +7,14 @@ import fantasy.gradle.testing.TestRegistration
 sealed interface LoaderProfile {
     val version: String
     val tests: TestRegistration
-    val geckolib: String
+    val geckolib: String?
     val testServerConfigDirectory: String
 }
 
 data class ForgeProfile(
     override val version: String,
     override val tests: TestRegistration,
-    override val geckolib: String,
+    override val geckolib: String? = null,
     val names: ForgeNames = ForgeNames.OFFICIAL,
     val classicLaunch: Boolean = true,
     override val testServerConfigDirectory: String = "world/serverconfig",
@@ -23,7 +23,7 @@ data class ForgeProfile(
 data class NeoForgeProfile(
     override val version: String,
     override val tests: TestRegistration,
-    override val geckolib: String,
+    override val geckolib: String? = null,
 ) : LoaderProfile {
     override val testServerConfigDirectory = "config"
 }
@@ -31,7 +31,7 @@ data class NeoForgeProfile(
 data class FabricProfile(
     override val version: String,
     override val tests: TestRegistration,
-    override val geckolib: String,
+    override val geckolib: String? = null,
     val fabricApi: String,
     val clothConfig: String,
 ) : LoaderProfile {

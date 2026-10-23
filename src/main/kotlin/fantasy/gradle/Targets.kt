@@ -67,7 +67,7 @@ open class TargetBuilder internal constructor(
 
     fun dependency(dependency: ModDependency) { dependencies.add(dependency) }
     fun requiredMod(id: String, version: String) = dependency(RequiredMod(id, version))
-    fun geckolib(version: String = MinecraftVersions[runtime.id].loader(settings.loader).geckolib) = dependency(GeckoLib(version))
+    fun geckolib(version: String = requireNotNull(MinecraftVersions[runtime.id].loader(settings.loader).geckolib) { "${runtime.id}: GeckoLib version has not been verified" }) = dependency(GeckoLib(version))
 
     internal open fun build() = Target(settings, runtime, releaseVersion, dependencies.toList(), minecraftRange, LoaderBuild(dataGeneration))
 }

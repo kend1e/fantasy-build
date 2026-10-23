@@ -20,6 +20,10 @@ public class LoaderAdapterTest {
         probe("fabric", "1.21.1", "0.18.2", "", "remapJar", "", "runClient", "runServer");
     }
 
+    @Test public void fabricWithoutRemapping() throws Exception {
+        probe("fabric", "26.1.2", "0.20.1", "", "jar", "", "runClient", "runServer");
+    }
+
     @Test public void forgeWithOfficialNames() throws Exception {
         probe("forge", "1.21.1", "52.1.3", "dataGeneration = true", "jar", "", "runClient", "runServer", "runData");
     }

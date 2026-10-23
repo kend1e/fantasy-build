@@ -49,6 +49,9 @@ class MinecraftCatalogTest {
             "1.21.1" to """{"pack":{"description":"Example","pack_format":48,"supported_formats":{"min_inclusive":34,"max_inclusive":48}}}""",
             "1.21.10" to """{"pack":{"description":"Example","pack_format":88,"min_format":88,"max_format":88}}""",
             "1.21.11" to """{"pack":{"description":"Example","pack_format":94,"min_format":[94,1],"max_format":94}}""",
+            "26.1.2" to """{"pack":{"description":"Example","pack_format":101,"min_format":[101,1],"max_format":101}}""",
+            "26.2" to """{"pack":{"description":"Example","pack_format":107,"min_format":[107,1],"max_format":107}}""",
+            "26.3" to """{"pack":{"description":"Example","pack_format":121,"min_format":121,"max_format":121}}""",
         )
         assertEquals(MinecraftVersions.supported, expected.keys)
         expected.forEach { (id, json) ->

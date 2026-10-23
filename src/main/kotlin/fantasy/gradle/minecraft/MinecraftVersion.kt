@@ -16,6 +16,7 @@ data class MinecraftVersion(
     val resourcePackFormat: PackFormat,
     val structures: String,
     val loaders: LoaderProfiles,
+    val obfuscated: Boolean = true,
 ) {
     val forge: ForgeProfile get() = requireLoader(loaders.forge, Loader.FORGE)
     val neoforge: NeoForgeProfile get() = requireLoader(loaders.neoforge, Loader.NEOFORGE)

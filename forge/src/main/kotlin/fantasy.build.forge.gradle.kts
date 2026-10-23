@@ -19,7 +19,7 @@ private val profile = ForgeRuntimeProfile.forTarget(target)
 configureLibraryRepositories(target)
 
 minecraft {
-    mappings("official", target.minecraft)
+    if (MinecraftVersions[target.minecraft].obfuscated) mappings("official", target.minecraft)
     runs {
         configureEach {
             workingDir.set(layout.projectDirectory.dir("run"))
@@ -52,8 +52,10 @@ dependencies {
     forge.attributes {
         attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
         attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.LIBRARY))
-        attribute(Attribute.of("net.minecraftforge.mappings.channel", String::class.java), "official")
-        attribute(Attribute.of("net.minecraftforge.mappings.version", String::class.java), target.minecraft)
+        if (MinecraftVersions[target.minecraft].obfuscated) {
+            attribute(Attribute.of("net.minecraftforge.mappings.channel", String::class.java), "official")
+            attribute(Attribute.of("net.minecraftforge.mappings.version", String::class.java), target.minecraft)
+        }
     }
     implementation(minecraft.dependency(project.name, forge))
     if (profile == ForgeRuntimeProfile.OFFICIAL) {
