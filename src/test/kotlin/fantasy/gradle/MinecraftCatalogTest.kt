@@ -8,6 +8,20 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class MinecraftCatalogTest {
+    @Test fun `item tooltips are accepted only for declared items`() {
+        fun catalog(tooltipId: String) = translations("example", tab = "equipment") {
+            language("en_us") {
+                tabTitle("Equipment")
+                item("crystal", "Crystal")
+                entry("item.example.$tooltipId.tooltip", "A mysterious crystal.")
+            }
+        }
+        catalog("crystal").validateItems(setOf("crystal"), "itemGroup.example.equipment")
+        assertThrows(IllegalArgumentException::class.java) {
+            catalog("cristal").validateItems(setOf("crystal"), "itemGroup.example.equipment")
+        }
+    }
+
     @Test fun `catalog supplies defaults without adding optional libraries`() {
         val targets = buildTargets("1") {
             forge("1.20.1", version = "47.3.0")

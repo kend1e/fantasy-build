@@ -17,9 +17,11 @@ class TranslationCatalog internal constructor(
         require("en_us" in entries) { "Required locale en_us is missing" }
         val expected = ids.map { "item.$namespace.$it" }.toSet()
         entries.forEach { (locale, values) ->
-            val items = values.keys.filter { it.startsWith("item.$namespace.") }.toSet()
-            require(items == expected && tabKey in values) {
-                "$locale: missing translations ${expected - items}; unknown translations ${items - expected}"
+            val itemKeys = values.keys.filter { it.startsWith("item.$namespace.") }.toSet()
+            val names = itemKeys.filterNot { it.endsWith(".tooltip") }.toSet()
+            val unknown = itemKeys.filter { it.removeSuffix(".tooltip") !in expected }.toSet()
+            require(names == expected && unknown.isEmpty() && tabKey in values) {
+                "$locale: missing translations ${expected - names}; unknown translations $unknown"
             }
         }
     }
