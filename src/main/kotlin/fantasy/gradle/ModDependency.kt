@@ -20,7 +20,14 @@ data class GeckoLib(override val version: String) : ModDependency {
         else -> error("Unsupported GeckoLib model layout: $version")
     }
 
-    fun notation(target: Target) = "software.bernie.geckolib:geckolib-${target.loader.id}-${target.minecraft}:$version"
+    val group: String get() {
+        val parts = version.split('.')
+        val major = parts[0].toInt()
+        val minor = parts[1].substringBefore('-').toInt()
+        return if (major > 5 || major == 5 && minor >= 5) "com.geckolib" else "software.bernie.geckolib"
+    }
+
+    fun notation(target: Target) = "$group:geckolib-${target.loader.id}-${target.minecraft}:$version"
 }
 
 data class FabricApi(override val version: String) : ModDependency {

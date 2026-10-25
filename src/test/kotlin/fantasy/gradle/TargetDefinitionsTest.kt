@@ -5,6 +5,23 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class TargetDefinitionsTest {
+    @Test fun `icon metadata follows loader versions without changing older targets`() {
+        for (minecraft in listOf("26.1.2", "26.2", "26.3")) {
+            val targets = buildTargets("1") {
+                forge(minecraft)
+                neoforge(minecraft)
+                fabric(minecraft)
+            }
+            assertEquals("logoFile", metadata.templateValues(targets[0])["mod_icon_key"])
+            assertEquals(if (minecraft == "26.1.2") "logoFile" else "iconFile",
+                metadata.templateValues(targets[1])["mod_icon_key"])
+            assertEquals("logo.png", metadata.copy(icon = "logo.png").fabricValues(targets[2])["icon"])
+        }
+        assertEquals("logoFile", NeoForgeSettings("21.11.42").iconMetadataKey)
+        assertEquals("logoFile", NeoForgeSettings("26.2.0.49-beta").iconMetadataKey)
+        assertEquals("iconFile", NeoForgeSettings("26.2.0.50-beta").iconMetadataKey)
+    }
+
     @Test fun `loader build options are declared per target`() {
         val targets = buildTargets("1") {
             forge("1.20.1", "47.3.12") {
@@ -58,6 +75,13 @@ class TargetDefinitionsTest {
         assertEquals("software.bernie.geckolib:geckolib-fabric-1.21.1:4.8.2", target.dependency<GeckoLib>().notation(target))
         assertEquals("net.fabricmc.fabric-api:fabric-api:0.116.7+1.21.1", target.dependency<FabricApi>().notation)
         assertEquals("me.shedaniel.cloth:cloth-config-fabric:15.0.140", target.dependency<ClothConfig>().notation)
+    }
+
+    @Test fun `GeckoLib coordinates follow the published group change`() {
+        val old = buildTargets("1") { fabric("1.21.11") { geckolib() } }.single()
+        val modern = buildTargets("1") { fabric("26.1.2") { geckolib() } }.single()
+        assertEquals("software.bernie.geckolib:geckolib-fabric-1.21.11:5.4.5", old.dependency<GeckoLib>().notation(old))
+        assertEquals("com.geckolib:geckolib-fabric-26.1.2:5.5.2", modern.dependency<GeckoLib>().notation(modern))
     }
 
     @Test fun `duplicate targets and dependencies are rejected`() {

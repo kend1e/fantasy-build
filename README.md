@@ -1,6 +1,6 @@
 # Fantasy Build
 
-Reusable Gradle conventions for Minecraft mods. Built and tested with Gradle 9.5.0 and JDK 21.
+Reusable Gradle conventions for Minecraft Fantasy Armor and Fantasy Weapons mods.
 
 Connect the local checkout in `settings.gradle.kts`:
 
@@ -42,3 +42,5 @@ See [mod metadata and target configuration](docs/configuration.md) for the share
 Run `./gradlew check` for plugin validation and functional tests. See [loader adapters](docs/loaders.md)
 for platform setup and integration-test prerequisites. Content definitions and game scenarios stay
 in the consuming mod. No plugin artifacts are published yet.
+
+_P.S. I also want to note that part of this code was written using AI, which isn't something I'm proud of, but I'm tired of Minecraft development and constantly having to update the API for every new version. I’m familiar with 1.7.10, but I don’t want to delve deeply into how the new versions of Minecraft work, let alone three or more loaders at the same time. I tried to keep it under control as best I could. Sorry if there’s any garbage code or bad design choices here._

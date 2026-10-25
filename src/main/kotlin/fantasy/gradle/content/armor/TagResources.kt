@@ -6,7 +6,8 @@ import fantasy.gradle.minecraft.*
 internal fun tagResources(namespace: String, armor: List<ArmorDefinition>, format: ArmorTagFormat): Map<String, String> = buildMap {
     if (format == ArmorTagFormat.NONE) return@buildMap
 
-    put("data/minecraft/tags/item/dyeable.json", tag(armor.flatMap { set ->
+    val dyeTag = if (format == ArmorTagFormat.CAULDRON_AND_ENCHANTABLE) "cauldron_can_remove_dye" else "dyeable"
+    put("data/minecraft/tags/item/$dyeTag.json", tag(armor.flatMap { set ->
         Piece.entries.map { "$namespace:${set.id}_${it.id}" }
     }))
     val enchantableTags = mapOf(

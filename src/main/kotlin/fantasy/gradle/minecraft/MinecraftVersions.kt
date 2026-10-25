@@ -179,19 +179,20 @@ object MinecraftVersions {
             obfuscated = false,
             resources = itemDefinitionResources.copy(recipes = itemDefinitionResources.recipes.copy(
                 upgrade = UpgradeRecipeMethod.SmithingTransform(ResultEncoding.ID_FIELD),
-            )),
+                explicitDyeRecipes = true,
+            ), armorTags = ArmorTagFormat.CAULDRON_AND_ENCHANTABLE),
             dataPackFormat = PackFormat(101, 1),
             resourcePackFormat = PackFormat(84, 0),
             structures = "structure",
             loaders = LoaderProfiles(
                 forge = ForgeProfile(
-                    version = "64.1.5", tests = TestRegistration.FORGE_FUNCTIONS,
+                    version = "64.1.5", tests = TestRegistration.FORGE_FUNCTIONS, geckolib = "5.5.2",
                     classicLaunch = false,
                     testServerConfigDirectory = "gametestserver/gametestworld/serverconfig",
                 ),
-                neoforge = NeoForgeProfile(version = "26.1.2.122", tests = TestRegistration.NEOFORGE_FUNCTIONS),
+                neoforge = NeoForgeProfile(version = "26.1.2.122", tests = TestRegistration.NEOFORGE_FUNCTIONS, geckolib = "5.5.2"),
                 fabric = FabricProfile(
-                    version = "0.20.1", tests = TestRegistration.FABRIC_REGISTRY,
+                    version = "0.20.1", tests = TestRegistration.FABRIC_REGISTRY, geckolib = "5.5.2",
                     fabricApi = "0.155.3+26.1.2", clothConfig = "26.1.154",
                 ),
             ),
@@ -201,19 +202,20 @@ object MinecraftVersions {
             obfuscated = false,
             resources = itemDefinitionResources.copy(recipes = itemDefinitionResources.recipes.copy(
                 upgrade = UpgradeRecipeMethod.SmithingTransform(ResultEncoding.ID_FIELD),
-            )),
+                explicitDyeRecipes = true,
+            ), armorTags = ArmorTagFormat.CAULDRON_AND_ENCHANTABLE),
             dataPackFormat = PackFormat(107, 1),
             resourcePackFormat = PackFormat(88, 0),
             structures = "structure",
             loaders = LoaderProfiles(
                 forge = ForgeProfile(
-                    version = "65.1.5", tests = TestRegistration.FORGE_FUNCTIONS,
+                    version = "65.1.5", tests = TestRegistration.FORGE_FUNCTIONS, geckolib = "5.5.6",
                     classicLaunch = false,
                     testServerConfigDirectory = "gametestserver/gametestworld/serverconfig",
                 ),
-                neoforge = NeoForgeProfile(version = "26.2.0.93", tests = TestRegistration.NEOFORGE_FUNCTIONS),
+                neoforge = NeoForgeProfile(version = "26.2.0.93", tests = TestRegistration.NEOFORGE_FUNCTIONS, geckolib = "5.5.6"),
                 fabric = FabricProfile(
-                    version = "0.20.1", tests = TestRegistration.FABRIC_REGISTRY,
+                    version = "0.20.1", tests = TestRegistration.FABRIC_REGISTRY, geckolib = "5.5.5",
                     fabricApi = "0.161.0+26.2", clothConfig = "26.2.155",
                 ),
             ),
@@ -223,19 +225,20 @@ object MinecraftVersions {
             obfuscated = false,
             resources = itemDefinitionResources.copy(recipes = itemDefinitionResources.recipes.copy(
                 upgrade = UpgradeRecipeMethod.SmithingTransform(ResultEncoding.ID_FIELD),
-            )),
+                explicitDyeRecipes = true,
+            ), armorTags = ArmorTagFormat.CAULDRON_AND_ENCHANTABLE),
             dataPackFormat = PackFormat(121, 0),
             resourcePackFormat = PackFormat(97, 1),
             structures = "structure",
             loaders = LoaderProfiles(
                 forge = ForgeProfile(
-                    version = "66.1.0", tests = TestRegistration.FORGE_FUNCTIONS,
+                    version = "66.1.0", tests = TestRegistration.FORGE_FUNCTIONS, geckolib = "5.5.7",
                     classicLaunch = false,
                     testServerConfigDirectory = "gametestserver/gametestworld/serverconfig",
                 ),
-                neoforge = NeoForgeProfile(version = "26.3.0.95", tests = TestRegistration.NEOFORGE_FUNCTIONS),
+                neoforge = NeoForgeProfile(version = "26.3.0.95", tests = TestRegistration.NEOFORGE_FUNCTIONS, geckolib = "5.5.7"),
                 fabric = FabricProfile(
-                    version = "0.20.1", tests = TestRegistration.FABRIC_REGISTRY,
+                    version = "0.20.1", tests = TestRegistration.FABRIC_REGISTRY, geckolib = "5.5.7",
                     fabricApi = "0.165.0+26.3", clothConfig = "26.3.159",
                 ),
             ),

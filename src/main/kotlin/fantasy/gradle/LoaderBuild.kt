@@ -31,6 +31,7 @@ fun Project.configureLibraryRepositories(target: Target) {
         content {
             includeGroupByRegex("software\\.bernie.*")
             includeGroup("com.eliotlash.mclib")
+            includeGroup("com.geckolib")
         }
     }
     if (target.dependencies.any { it is ClothConfig }) {

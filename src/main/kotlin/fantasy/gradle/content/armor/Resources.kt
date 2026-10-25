@@ -16,6 +16,13 @@ fun contentResources(namespace: String, armor: List<ArmorDefinition>, languages:
         val directory = "data/$namespace/${formats.recipes.directory}"
         for (set in armor) for (piece in Piece.entries) {
             val id = "${set.id}_${piece.id}"
+            if (formats.recipes.explicitDyeRecipes) {
+                put("$directory/${id}_dyed.json", json(mapOf(
+                    "type" to "minecraft:crafting_dye", "group" to "dyed_armor",
+                    "dye" to "#minecraft:dyes", "target" to "$namespace:$id",
+                    "result" to mapOf("id" to "$namespace:$id"),
+                )))
+            }
             put("$directory/$id.json", upgradeRecipe(set.upgradeIngredient, "minecraft:netherite_${piece.id}", set.addition, "$namespace:$id", formats.recipes))
         }
         for (recipe in craftingRecipes) {

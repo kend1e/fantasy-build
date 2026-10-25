@@ -40,6 +40,7 @@ fun ModMetadata.templateValues(target: Target): Map<String, String> = buildMap {
     put("mod_authors", authors)
     put("mod_description", description)
     put("mod_icon", icon)
+    put("mod_icon_key", target.settings.iconMetadataKey)
     when (target.loader) {
         Loader.FORGE -> { put("forge_version", target.loaderVersion); put("forge_version_range", target.loaderDependencyRange) }
         Loader.NEOFORGE -> { put("neo_version", target.loaderVersion); put("neo_version_range", target.loaderDependencyRange) }
