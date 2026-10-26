@@ -7,6 +7,7 @@ import org.gradle.api.plugins.BasePluginExtension
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.bundling.AbstractArchiveTask
+import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.*
@@ -27,6 +28,9 @@ class PlatformPlugin : Plugin<Project> {
         tasks.withType<AbstractArchiveTask>().configureEach {
             isPreserveFileTimestamps = false
             isReproducibleFileOrder = true
+        }
+        tasks.named<Jar>("jar") {
+            from(rootProject.layout.projectDirectory.file("LICENSE.md"))
         }
         val sharedSourcesDependencies = configurations.dependencyScope("sharedSourcesDependencies")
         val sharedSources = configurations.resolvable("sharedSourceFiles") {

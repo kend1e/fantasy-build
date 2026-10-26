@@ -100,6 +100,7 @@ public class PluginFunctionalTest {
     public void sharesSourcesAndGeneratesResourcesWithConfigurationCache() throws IOException {
         String modId = "example_equipment";
         Path root = temporary.newFolder(modId).toPath();
+        write(root, "LICENSE.md", "Example license\n");
         write(root, "settings.gradle.kts", "rootProject.name = \"consumer\"\ninclude(\"core\", \"platform\")\n");
         write(root, "core/build.gradle.kts", """
             plugins { id("fantasy.build.shared") }
@@ -142,6 +143,8 @@ public class PluginFunctionalTest {
             assertNotNull(zip.getEntry("example/SharedValue.class"));
             assertNotNull(zip.getEntry("example/Consumer.class"));
             assertNotNull(zip.getEntry("defaults.json"));
+            assertEquals("Example license\n", new String(zip.getInputStream(zip.getEntry("LICENSE.md")).readAllBytes(), java.nio.charset.StandardCharsets.UTF_8));
+            assertEquals(1, zip.stream().filter(entry -> entry.getName().startsWith("LICENSE")).count());
             assertNotNull(zip.getEntry("static.txt"));
             assertNotNull(zip.getEntry("assets/" + modId + "/first.txt"));
             assertTrue(zip.stream().allMatch(entry -> entry.getTimeLocal().getYear() == 1980));

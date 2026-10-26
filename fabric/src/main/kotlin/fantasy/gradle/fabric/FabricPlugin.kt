@@ -15,7 +15,6 @@ import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.bundling.AbstractArchiveTask
-import org.gradle.api.tasks.bundling.Jar
 import org.gradle.kotlin.dsl.*
 
 class FabricPlugin : Plugin<Project> {
@@ -64,11 +63,6 @@ class FabricPlugin : Plugin<Project> {
 
         extensions.getByType<JavaPluginExtension>().withSourcesJar()
         val archiveName = extensions.getByType<BasePluginExtension>().archivesName
-        tasks.named<Jar>("jar") {
-            val licenseName = "LICENSE.md_${archiveName.get()}"
-            inputs.property("archivesName", archiveName)
-            from(rootProject.layout.projectDirectory.file("LICENSE.md")) { rename { licenseName } }
-        }
         extensions.getByType<PublishingExtension>().publications.create<MavenPublication>("mavenJava") {
             artifactId = archiveName.get()
             from(components["java"])
