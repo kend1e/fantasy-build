@@ -38,9 +38,15 @@ class FabricPlugin : Plugin<Project> {
             target.dependencies.forEach { library ->
                 when (library) {
                     is FabricApi -> add(if (version.obfuscated) "modImplementation" else "implementation", library.notation)
-                    is GeckoLib -> add(if (version.obfuscated) "modImplementation" else "implementation", library.notation(target))
+                    is GeckoLib -> add(if (version.obfuscated) "modImplementation" else "implementation", library.notation(target)) {
+                        (this as ExternalModuleDependency).exclude(mapOf("group" to "net.fabricmc", "module" to "fabric-loader"))
+                        if (target.dependencies.any { it is FabricApi }) {
+                            exclude(mapOf("group" to "net.fabricmc.fabric-api"))
+                        }
+                    }
                     is ClothConfig -> add(if (version.obfuscated) "modApi" else "api", library.notation) {
                         (this as ExternalModuleDependency).exclude(mapOf("group" to "net.fabricmc.fabric-api"))
+                        exclude(mapOf("group" to "net.fabricmc", "module" to "fabric-loader"))
                     }
                 }
             }
