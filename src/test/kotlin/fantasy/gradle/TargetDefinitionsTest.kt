@@ -132,7 +132,7 @@ class TargetDefinitionsTest {
         }
     }
 
-    @Test fun `Minecraft compatibility can be narrowed explicitly`() {
+    @Test fun `Minecraft compatibility can be overridden explicitly`() {
         val target = buildTargets("0.4") {
             fabric("1.21.1", "0.18.2") { minecraftRange = "~1.21.1" }
         }.single()

@@ -20,6 +20,7 @@ object MinecraftVersions {
     private val versions = listOf(
         MinecraftVersion(
             runtime = MinecraftRuntime(id = "1.19.4", java = 17),
+            compatibilityUpperBound = "1.19.5",
             resources = MinecraftResources(
                 recipes = RecipeFormat(
                     directory = "recipes",
@@ -52,6 +53,7 @@ object MinecraftVersions {
         ),
         MinecraftVersion(
             runtime = MinecraftRuntime(id = "1.20.1", java = 17),
+            compatibilityUpperBound = "1.20.2",
             resources = MinecraftResources(
                 recipes = RecipeFormat(
                     directory = "recipes",
@@ -84,6 +86,7 @@ object MinecraftVersions {
         ),
         MinecraftVersion(
             runtime = MinecraftRuntime(id = "1.21.1", java = 21),
+            compatibilityUpperBound = "1.21.2",
             resources = MinecraftResources(
                 recipes = RecipeFormat(
                     directory = "recipe",
@@ -120,6 +123,7 @@ object MinecraftVersions {
         ),
         MinecraftVersion(
             runtime = MinecraftRuntime(id = "1.21.10", java = 21),
+            compatibilityUpperBound = "1.21.11",
             resources = itemDefinitionResources,
             dataPackFormat = PackFormat(major = 88),
             resourcePackFormat = PackFormat(major = 69),
@@ -148,6 +152,7 @@ object MinecraftVersions {
         ),
         MinecraftVersion(
             runtime = MinecraftRuntime(id = "1.21.11", java = 21),
+            compatibilityUpperBound = "1.21.12",
             resources = itemDefinitionResources,
             dataPackFormat = PackFormat(major = 94, minor = 1),
             resourcePackFormat = PackFormat(major = 75),
@@ -176,6 +181,7 @@ object MinecraftVersions {
         ),
         MinecraftVersion(
             runtime = MinecraftRuntime(id = "26.1.2", java = 25),
+            compatibilityUpperBound = "26.2",
             obfuscated = false,
             resources = itemDefinitionResources.copy(recipes = itemDefinitionResources.recipes.copy(
                 upgrade = UpgradeRecipeMethod.SmithingTransform(ResultEncoding.ID_FIELD),
@@ -199,6 +205,7 @@ object MinecraftVersions {
         ),
         MinecraftVersion(
             runtime = MinecraftRuntime(id = "26.2", java = 25),
+            compatibilityUpperBound = "26.3",
             obfuscated = false,
             resources = itemDefinitionResources.copy(recipes = itemDefinitionResources.recipes.copy(
                 upgrade = UpgradeRecipeMethod.SmithingTransform(ResultEncoding.ID_FIELD),
@@ -222,6 +229,7 @@ object MinecraftVersions {
         ),
         MinecraftVersion(
             runtime = MinecraftRuntime(id = "26.3", java = 25),
+            compatibilityUpperBound = "26.4",
             obfuscated = false,
             resources = itemDefinitionResources.copy(recipes = itemDefinitionResources.recipes.copy(
                 upgrade = UpgradeRecipeMethod.SmithingTransform(ResultEncoding.ID_FIELD),

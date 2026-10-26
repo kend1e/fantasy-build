@@ -8,6 +8,37 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class MinecraftCatalogTest {
+    @Test fun `Minecraft metadata stops before incompatible updates for every supported target`() {
+        val bounds = mapOf(
+            "1.19.4" to "1.19.5", "1.20.1" to "1.20.2", "1.21.1" to "1.21.2",
+            "1.21.10" to "1.21.11", "1.21.11" to "1.21.12",
+            "26.1.2" to "26.2", "26.2" to "26.3", "26.3" to "26.4",
+        )
+        val metadata = modMetadata {
+            id = "example"
+            name = "Example"
+            group = "org.example"
+            license = "MIT"
+        }
+        assertEquals(MinecraftVersions.supported, bounds.keys)
+        bounds.forEach { (minecraft, upper) ->
+            val version = MinecraftVersions[minecraft]
+            val targets = buildTargets("1") {
+                if (version.loaders.forge != null) forge(minecraft)
+                if (version.loaders.neoforge != null) neoforge(minecraft)
+                if (version.loaders.fabric != null) fabric(minecraft)
+            }
+            targets.forEach { target ->
+                if (target.loader == Loader.FABRIC) {
+                    val depends = metadata.fabricValues(target)["depends"] as Map<*, *>
+                    assertEquals(">=$minecraft <$upper-", depends["minecraft"])
+                } else {
+                    assertEquals("[$minecraft,$upper)", metadata.templateValues(target)["minecraft_version_range"])
+                }
+            }
+        }
+    }
+
     @Test fun `item tooltips are accepted only for declared items`() {
         fun catalog(tooltipId: String) = translations("example", tab = "equipment") {
             language("en_us") {

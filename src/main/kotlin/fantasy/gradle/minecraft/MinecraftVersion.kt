@@ -11,6 +11,7 @@ data class PackFormat(val major: Int, val minor: Int = 0) {
 
 data class MinecraftVersion(
     val runtime: MinecraftRuntime,
+    val compatibilityUpperBound: String,
     val resources: MinecraftResources,
     val dataPackFormat: PackFormat,
     val resourcePackFormat: PackFormat,

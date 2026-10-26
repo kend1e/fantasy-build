@@ -62,7 +62,9 @@ open class TargetBuilder internal constructor(
 ) {
     private val dependencies = mutableListOf<ModDependency>()
     var releaseVersion: String = releaseVersion
-    var minecraftRange: String = settings.loader.minimumVersion(runtime.id)
+    var minecraftRange: String = settings.loader.versionRange(
+        runtime.id, MinecraftVersions[runtime.id].compatibilityUpperBound,
+    )
     var dataGeneration: Boolean = false
 
     fun dependency(dependency: ModDependency) { dependencies.add(dependency) }

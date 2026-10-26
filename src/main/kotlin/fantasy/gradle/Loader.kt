@@ -12,6 +12,11 @@ enum class Loader(val id: String, val metadataFile: String) {
         else -> "[$version,)"
     }
 
+    fun versionRange(minimum: String, maximumExclusive: String): String = when (this) {
+        FABRIC -> ">=$minimum <$maximumExclusive-"
+        else -> "[$minimum,$maximumExclusive)"
+    }
+
     fun languageVersion(version: String): String = when (this) {
         FORGE -> minimumVersion(version.substringBefore('.'))
         NEOFORGE -> minimumVersion("1")
