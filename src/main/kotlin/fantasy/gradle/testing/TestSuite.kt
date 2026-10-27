@@ -33,7 +33,9 @@ fun Project.configureModTests(suite: TestSuite): SourceSet {
     val module = suite.module
     val target = extensions.getByType<Target>()
     val version = MinecraftVersions[target.minecraft]
-    val registration = version.loader(target.loader).tests
+    val registration = requireNotNull(version.loader(target.loader).tests) {
+        "${target.name}: native GameTest is not supported"
+    }
     val cases = suite.cases.filter { it.appliesTo(target) }
     val sourceSets = extensions.getByType<SourceSetContainer>()
     val main = sourceSets.getByName("main")
@@ -123,7 +125,9 @@ private fun Project.verifyModTestReport(suite: TestSuite, taskName: String): Pro
     val module = suite.module
     val target = extensions.getByType<Target>()
     val version = MinecraftVersions[target.minecraft]
-    val registration = version.loader(target.loader).tests
+    val registration = requireNotNull(version.loader(target.loader).tests) {
+        "${target.name}: native GameTest is not supported"
+    }
     val expected = suite.cases.filter { it.appliesTo(target) }.map { registration.reportName(it.id, module) }.toSet() + registration.additionalReportNames
     val prepare = tasks.register<PrepareTestRun>("prepareTestRun") {
         val files = suite.configFiles

@@ -11,7 +11,19 @@ class TranslationCatalog internal constructor(
     val entries: Map<String, Map<String, String>>,
     private val armorIds: Map<String, Set<String>>,
 ) {
-    fun resources(): Map<String, String> = entries.mapKeys { (locale, _) -> "assets/$namespace/lang/$locale.json" }.mapValues { json(it.value) }
+    fun resources(format: fantasy.gradle.minecraft.TranslationFormat = fantasy.gradle.minecraft.TranslationFormat.JSON): Map<String, String> =
+        entries.map { (locale, values) ->
+            if (format == fantasy.gradle.minecraft.TranslationFormat.JSON) {
+                "assets/$namespace/lang/$locale.json" to json(values)
+            } else {
+                val text = values.entries.joinToString("\n", postfix = "\n") { (key, value) ->
+                    require('\n' !in value && '\r' !in value) { "$locale: multiline translation cannot be written as .lang: $key" }
+                    val name = if (key.startsWith("item.$namespace.") && !key.endsWith(".tooltip")) "$key.name" else key
+                    "$name=$value"
+                }
+                "assets/$namespace/lang/$locale.lang" to text
+            }
+        }.toMap()
 
     fun validateItems(ids: Set<String>, tabKey: String) {
         require("en_us" in entries) { "Required locale en_us is missing" }

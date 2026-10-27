@@ -11,14 +11,17 @@ fun catalogResources(content: ContentCatalog): Map<String, String> = mapOf(
     )),
 )
 
-fun contentResources(content: ContentCatalog, languages: TranslationCatalog, minecraft: String): Map<String, String> {
+fun contentResources(content: ContentCatalog, languages: TranslationCatalog, minecraft: String, ingredientOverrides: Map<String, RecipeItem> = emptyMap()): Map<String, String> {
     val version = MinecraftVersions[minecraft]
-    val format = version.resources.recipes
+    val format = version.resources.recipes.let { format ->
+        val replacements = ingredientOverrides.mapValues { (_, item) -> format.itemAliases[item.id] ?: item }
+        format.copy(itemAliases = format.itemAliases + replacements)
+    }
     require(languages.namespace == content.namespace)
     languages.validateItems(content.itemIds.toSet(), content.tabTranslationKey)
     return buildMap {
         val assets = "assets/${content.namespace}"
-        val recipes = "data/${content.namespace}/${format.directory}"
+        val recipes = "${format.root}/${content.namespace}/${format.directory}"
         fun model(id: String, parent: String) = json(mapOf(
             "parent" to parent, "textures" to mapOf("layer0" to "${content.namespace}:item/$id"),
         ))
@@ -54,6 +57,6 @@ fun contentResources(content: ContentCatalog, languages: TranslationCatalog, min
         if (version.resources.swordTags) put("data/minecraft/tags/item/swords.json", json(mapOf(
             "replace" to false, "values" to content.weapons.map { "${content.namespace}:${it.id}" },
         )))
-        putAll(languages.resources())
+        putAll(languages.resources(version.resources.translations))
     }
 }

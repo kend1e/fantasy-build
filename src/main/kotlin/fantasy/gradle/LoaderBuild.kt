@@ -34,7 +34,7 @@ fun Project.configureLibraryRepositories(target: Target) {
             includeGroup("com.geckolib")
         }
     }
-    if (target.dependencies.any { it is ClothConfig }) {
+    if (target.dependencies.any { it is ClothConfig || it is AutoConfig1u }) {
         repositories.maven("https://maven.shedaniel.me/")
         repositories.maven("https://maven.terraformersmc.com/releases/")
     }

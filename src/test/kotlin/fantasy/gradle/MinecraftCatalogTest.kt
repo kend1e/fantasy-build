@@ -10,7 +10,8 @@ import org.junit.Test
 class MinecraftCatalogTest {
     @Test fun `Minecraft metadata stops before incompatible updates for every supported target`() {
         val bounds = mapOf(
-            "1.19.4" to "1.19.5", "1.20.1" to "1.20.2", "1.21.1" to "1.21.2",
+            "1.12.2" to "1.13", "1.14.4" to "1.15", "1.15.2" to "1.16", "1.16.5" to "1.17",
+            "1.18.2" to "1.19", "1.19.2" to "1.19.3", "1.19.3" to "1.19.4", "1.19.4" to "1.19.5", "1.20.1" to "1.20.2", "1.21.1" to "1.21.2",
             "1.21.10" to "1.21.11", "1.21.11" to "1.21.12",
             "26.1.2" to "26.2", "26.2" to "26.3", "26.3" to "26.4",
         )
@@ -89,6 +90,13 @@ class MinecraftCatalogTest {
 
     @Test fun `pack metadata retains every verified version format`() {
         val expected = mapOf(
+            "1.12.2" to """{"pack":{"description":"Example","pack_format":3}}""",
+            "1.14.4" to """{"pack":{"description":"Example","pack_format":4}}""",
+            "1.15.2" to """{"pack":{"description":"Example","pack_format":5}}""",
+            "1.16.5" to """{"pack":{"description":"Example","pack_format":6}}""",
+            "1.18.2" to """{"pack":{"description":"Example","pack_format":9,"supported_formats":{"min_inclusive":8,"max_inclusive":9}}}""",
+            "1.19.2" to """{"pack":{"description":"Example","pack_format":10,"supported_formats":{"min_inclusive":9,"max_inclusive":10}}}""",
+            "1.19.3" to """{"pack":{"description":"Example","pack_format":10,"supported_formats":{"min_inclusive":10,"max_inclusive":12}}}""",
             "1.19.4" to """{"pack":{"description":"Example","pack_format":12,"supported_formats":{"min_inclusive":12,"max_inclusive":13}}}""",
             "1.20.1" to """{"pack":{"description":"Example","pack_format":15}}""",
             "1.21.1" to """{"pack":{"description":"Example","pack_format":48,"supported_formats":{"min_inclusive":34,"max_inclusive":48}}}""",
@@ -102,7 +110,9 @@ class MinecraftCatalogTest {
         expected.forEach { (id, json) ->
             assertEquals(id, JsonParser.parseString(json), JsonParser.parseString(MinecraftVersions[id].packMetadata("Example")))
             val dataOnly = JsonParser.parseString(json).asJsonObject.apply { getAsJsonObject("pack").remove("supported_formats") }
-            assertEquals(id, dataOnly, JsonParser.parseString(MinecraftVersions[id].packMetadata("Example", dataOnly = true)))
+            if (MinecraftVersions[id].dataPackFormat == null) {
+                assertThrows(IllegalArgumentException::class.java) { MinecraftVersions[id].packMetadata("Example", dataOnly = true) }
+            } else assertEquals(id, dataOnly, JsonParser.parseString(MinecraftVersions[id].packMetadata("Example", dataOnly = true)))
         }
     }
 

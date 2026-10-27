@@ -43,9 +43,14 @@ class FabricPlugin : Plugin<Project> {
                             exclude(mapOf("group" to "net.fabricmc.fabric-api"))
                         }
                     }
+                    is AutoConfig1u -> {
+                        add("modImplementation", library.notation) { (this as ExternalModuleDependency).isTransitive = false }
+                        add("include", library.notation) { (this as ExternalModuleDependency).isTransitive = false }
+                    }
                     is ClothConfig -> add(if (version.obfuscated) "modApi" else "api", library.notation) {
                         (this as ExternalModuleDependency).exclude(mapOf("group" to "net.fabricmc.fabric-api"))
                         exclude(mapOf("group" to "net.fabricmc", "module" to "fabric-loader"))
+                        exclude(mapOf("group" to "io.github.prospector", "module" to "modmenu"))
                     }
                 }
             }

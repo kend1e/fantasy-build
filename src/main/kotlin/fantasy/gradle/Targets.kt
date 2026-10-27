@@ -76,7 +76,7 @@ open class TargetBuilder internal constructor(
 
 @ModBuildDsl
 class ForgeTargetBuilder internal constructor(runtime: MinecraftRuntime, version: String, releaseVersion: String) :
-    TargetBuilder(runtime, ForgeSettings(version), releaseVersion) {
+    TargetBuilder(runtime, ForgeSettings(version, MinecraftVersions[runtime.id].forge.metadata), releaseVersion) {
     var names: ForgeNames = ForgeNames.OFFICIAL
     internal override fun build() = super.build().let { it.copy(build = it.build.copy(forgeNames = names)) }
 }
@@ -84,8 +84,11 @@ class ForgeTargetBuilder internal constructor(runtime: MinecraftRuntime, version
 @ModBuildDsl
 class FabricTargetBuilder internal constructor(runtime: MinecraftRuntime, version: String, releaseVersion: String) :
     TargetBuilder(runtime, FabricSettings(version), releaseVersion) {
-    fun fabricApi(version: String = MinecraftVersions[runtime.id].fabric.fabricApi) = dependency(FabricApi(version))
-    fun clothConfig(version: String = MinecraftVersions[runtime.id].fabric.clothConfig) = dependency(ClothConfig(version))
+    fun fabricApi(version: String = MinecraftVersions[runtime.id].fabric.fabricApi) = dependency(FabricApi(version, MinecraftVersions[runtime.id].fabric.fabricApiModId))
+    fun autoConfig1u(version: String = requireNotNull(MinecraftVersions[runtime.id].fabric.autoConfig1u) {
+        "${runtime.id}: AutoConfig1u is not used by this Fabric version"
+    }) = dependency(AutoConfig1u(version))
+    fun clothConfig(version: String = MinecraftVersions[runtime.id].fabric.clothConfig) = dependency(ClothConfig(version, MinecraftVersions[runtime.id].fabric.clothConfigModule))
 }
 
 @ModBuildDsl

@@ -23,7 +23,9 @@ class PlatformPlugin : Plugin<Project> {
         extensions.configure<BasePluginExtension> { archivesName.convention(platform.archiveName) }
         tasks.withType<JavaCompile>().configureEach {
             options.encoding = "UTF-8"
-            options.release.set(platform.javaVersion)
+            sourceCompatibility = platform.javaVersion.map { if (it < 9) "1.$it" else it.toString() }.get()
+            targetCompatibility = sourceCompatibility
+            options.release.set(platform.javaVersion.map { if (it >= 9) it else null })
         }
         tasks.withType<AbstractArchiveTask>().configureEach {
             isPreserveFileTimestamps = false

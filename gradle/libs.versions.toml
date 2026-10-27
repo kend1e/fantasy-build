@@ -1,6 +1,6 @@
 [versions]
 loom = "1.19.3"
-forgeGradle = "7.0.29"
+forgeGradle = "7.0.40"
 renamer = "1.1.2"
 moddev = "2.0.148"
 

@@ -34,7 +34,21 @@ data class ShapedRecipeDefinition(
 
 fun IngredientEncoding.encode(id: String): Any = when (this) {
     IngredientEncoding.ITEM_OBJECT -> mapOf("item" to id)
+    IngredientEncoding.ITEM_WITH_METADATA -> mapOf("item" to id, "data" to 0)
     IngredientEncoding.ITEM_ID -> id
+}
+
+fun RecipeFormat.ingredient(id: String, anyDamage: Boolean = false): Any {
+    if (anyDamage && ingredients == IngredientEncoding.ITEM_WITH_METADATA) {
+        return mapOf("item" to (itemAliases[id]?.id ?: id), "data" to 32767)
+    }
+    val item = itemAliases[id] ?: return ingredients.encode(id)
+    require(ingredients != IngredientEncoding.ITEM_ID) { "Item aliases require object ingredients" }
+    return buildMap<String, Any> {
+        put("item", item.id)
+        if (ingredients == IngredientEncoding.ITEM_WITH_METADATA) put("data", item.data ?: 0)
+        else item.data?.let { put("data", it) }
+    }
 }
 
 fun ResultEncoding.encode(id: String, count: Int = 1): Any = when (this) {
@@ -50,7 +64,7 @@ fun ResultEncoding.encode(id: String, count: Int = 1): Any = when (this) {
 
 fun shapedRecipe(recipe: ShapedRecipeDefinition, format: RecipeFormat): String = json(mapOf(
     "pattern" to recipe.pattern,
-    "key" to recipe.ingredients.mapValues { format.ingredients.encode(it.value) },
+    "key" to recipe.ingredients.mapValues { format.ingredient(it.value) },
     "result" to format.craftingResult.encode(recipe.result, recipe.count),
     "type" to "minecraft:crafting_shaped",
 ))
@@ -58,14 +72,14 @@ fun shapedRecipe(recipe: ShapedRecipeDefinition, format: RecipeFormat): String =
 fun upgradeRecipe(template: String, base: String, addition: String, result: String, format: RecipeFormat): String =
     when (val method = format.upgrade) {
         UpgradeRecipeMethod.CraftingTable -> json(mapOf(
-            "ingredients" to listOf(template, base, addition).map { format.ingredients.encode(it) },
+            "ingredients" to listOf(format.ingredient(template), format.ingredient(base, anyDamage = true), format.ingredient(addition)),
             "result" to format.craftingResult.encode(result),
             "type" to "minecraft:crafting_shapeless",
         ))
         is UpgradeRecipeMethod.SmithingTransform -> json(mapOf(
-            "template" to format.ingredients.encode(template),
-            "base" to format.ingredients.encode(base),
-            "addition" to format.ingredients.encode(addition),
+            "template" to format.ingredient(template),
+            "base" to format.ingredient(base),
+            "addition" to format.ingredient(addition),
             "result" to method.result.encode(result),
             "type" to "minecraft:smithing_transform",
             "category" to "equipment",

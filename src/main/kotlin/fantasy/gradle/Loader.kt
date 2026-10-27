@@ -28,10 +28,14 @@ sealed interface LoaderSettings : Serializable {
     val loader: Loader
     val version: String
     val iconMetadataKey: String
+    val metadataFile: String get() = loader.metadataFile
 }
 
-data class ForgeSettings(override val version: String) : LoaderSettings {
+enum class ForgeMetadata(val file: String) { MODS_TOML("META-INF/mods.toml"), MCMOD_INFO("mcmod.info") }
+
+data class ForgeSettings(override val version: String, val metadata: ForgeMetadata = ForgeMetadata.MODS_TOML) : LoaderSettings {
     override val loader get() = Loader.FORGE
+    override val metadataFile get() = metadata.file
     override val iconMetadataKey get() = "logoFile"
 }
 

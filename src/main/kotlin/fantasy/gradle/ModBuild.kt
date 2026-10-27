@@ -2,6 +2,7 @@ package fantasy.gradle
 
 import fantasy.gradle.minecraft.MinecraftVersions
 import fantasy.gradle.resources.packMetadata
+import fantasy.gradle.resources.json
 import org.gradle.api.Project
 import org.gradle.api.initialization.Settings
 import org.gradle.api.tasks.Sync
@@ -34,7 +35,20 @@ fun Project.configureMod(
             outputDirectory.set(layout.buildDirectory.dir("generated/resources/pack"))
         }
     }
-    if (target.loader == Loader.FABRIC) {
+    if ((target.settings as? ForgeSettings)?.metadata == ForgeMetadata.MCMOD_INFO) {
+        extensions.configure<ResourcesExtension> {
+            generate("generateModMetadata") {
+                contents.set(mapOf("mcmod.info" to json(listOf(mapOf(
+                    "modid" to metadata.id, "name" to metadata.name, "version" to target.modVersion,
+                    "mcversion" to target.minecraft, "description" to metadata.description,
+                    "url" to metadata.homepage, "authorList" to metadata.authors.split(',').map(String::trim),
+                    "logoFile" to metadata.icon, "useDependencyInformation" to true,
+                    "requiredMods" to listOf("forge@${target.loaderDependencyRange}") + target.dependencies.map { "${it.id}@${it.versionRange(target.loader)}" },
+                    "dependencies" to listOf("forge@${target.loaderDependencyRange}") + target.dependencies.map { "${it.id}@${it.versionRange(target.loader)}" },
+                )))))
+            }
+        }
+    } else if (target.loader == Loader.FABRIC) {
         val template = providers.fileContents(templatesDirectory.file("fabric.mod.json")).asText
         extensions.configure<ResourcesExtension> {
             generate("generateModMetadata") {
@@ -57,5 +71,5 @@ fun Project.configureMod(
 private fun Project.modTemplates(target: Target): org.gradle.api.file.Directory {
     val loader = rootProject.layout.projectDirectory.dir("loaders/${target.loader.id}")
     val platform = layout.projectDirectory.dir("src/main/templates")
-    return platform.takeIf { it.file(target.loader.metadataFile).asFile.isFile } ?: loader.dir("src/main/templates")
+    return platform.takeIf { it.file(target.settings.metadataFile).asFile.isFile } ?: loader.dir("src/main/templates")
 }

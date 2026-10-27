@@ -13,7 +13,7 @@ data class MinecraftVersion(
     val runtime: MinecraftRuntime,
     val compatibilityUpperBound: String,
     val resources: MinecraftResources,
-    val dataPackFormat: PackFormat,
+    val dataPackFormat: PackFormat?,
     val resourcePackFormat: PackFormat,
     val structures: String,
     val loaders: LoaderProfiles,

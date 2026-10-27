@@ -30,18 +30,25 @@ data class GeckoLib(override val version: String) : ModDependency {
     fun notation(target: Target) = "$group:geckolib-${target.loader.id}-${target.minecraft}:$version"
 }
 
-data class FabricApi(override val version: String) : ModDependency {
-    override val id get() = "fabric-api"
+data class FabricApi(override val version: String, override val id: String = "fabric-api") : ModDependency {
     val notation get() = "net.fabricmc.fabric-api:fabric-api:$version"
     override fun validate(loader: Loader) {
         require(loader == Loader.FABRIC) { "Fabric API can only be used with Fabric" }
     }
 }
 
-data class ClothConfig(override val version: String) : ModDependency {
+data class ClothConfig(override val version: String, val module: String = "cloth-config-fabric") : ModDependency {
     override val id get() = "cloth-config2"
-    val notation get() = "me.shedaniel.cloth:cloth-config-fabric:$version"
+    val notation get() = "me.shedaniel.cloth:$module:$version"
     override fun validate(loader: Loader) {
         require(loader == Loader.FABRIC) { "The Cloth Config integration supports Fabric only" }
+    }
+}
+
+data class AutoConfig1u(override val version: String) : ModDependency {
+    override val id get() = "autoconfig1u"
+    val notation get() = "me.sargunvohra.mcmods:autoconfig1u:$version"
+    override fun validate(loader: Loader) {
+        require(loader == Loader.FABRIC) { "AutoConfig1u supports Fabric only" }
     }
 }

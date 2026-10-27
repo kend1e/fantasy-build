@@ -19,10 +19,14 @@ private val profile = ForgeRuntimeProfile.forTarget(target)
 configureLibraryRepositories(target)
 
 minecraft {
-    if (MinecraftVersions[target.minecraft].obfuscated) mappings("official", target.minecraft)
+    if (MinecraftVersions[target.minecraft].obfuscated) {
+        val forge = MinecraftVersions[target.minecraft].forge
+        mappings(forge.mappingsChannel, forge.mappingsVersion ?: target.minecraft)
+    }
     runs {
         configureEach {
             workingDir.set(layout.projectDirectory.dir("run"))
+            jvmArgs(MinecraftVersions[target.minecraft].forge.launchJvmArgs)
             if (profile.classicLaunch) {
                 systemProperty("forge.logging.markers", "REGISTRIES")
                 systemProperty("forge.logging.console.level", "debug")
@@ -31,7 +35,7 @@ minecraft {
         }
         register("client")
         register("server") { args("--nogui") }
-        register("gameTestServer")
+        if (MinecraftVersions[target.minecraft].forge.tests != null) register("gameTestServer")
         if (target.build.dataGeneration) register("data") {
             workingDir.set(layout.projectDirectory.dir("run-data"))
             args("--mod", metadata.id, "--all", "--output",
@@ -53,8 +57,8 @@ dependencies {
         attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
         attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.LIBRARY))
         if (MinecraftVersions[target.minecraft].obfuscated) {
-            attribute(Attribute.of("net.minecraftforge.mappings.channel", String::class.java), "official")
-            attribute(Attribute.of("net.minecraftforge.mappings.version", String::class.java), target.minecraft)
+            attribute(Attribute.of("net.minecraftforge.mappings.channel", String::class.java), MinecraftVersions[target.minecraft].forge.mappingsChannel)
+            attribute(Attribute.of("net.minecraftforge.mappings.version", String::class.java), MinecraftVersions[target.minecraft].forge.mappingsVersion ?: target.minecraft)
         }
     }
     implementation(minecraft.dependency(project.name, forge))
@@ -65,6 +69,25 @@ dependencies {
         target.dependencies.filterIsInstance<GeckoLib>().forEach { implementation(it.notation(target)) }
     }
 }
+// Mavenizer publishes the old Forge launcher as a self-dependency without variant attributes.
+dependencies.components.withModule("net.minecraftforge:forge") {
+    if (id.version == "${target.minecraft}-${target.loaderVersion}") allVariants {
+        withDependencies {
+            filter { it.group == "net.minecraftforge" && it.name == "forge" }.forEach { dependency ->
+                dependency.attributes {
+                    attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
+                    attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.LIBRARY))
+                    if (MinecraftVersions[target.minecraft].obfuscated) {
+                        val forge = MinecraftVersions[target.minecraft].forge
+                        attribute(Attribute.of("net.minecraftforge.mappings.channel", String::class.java), forge.mappingsChannel)
+                        attribute(Attribute.of("net.minecraftforge.mappings.version", String::class.java), forge.mappingsVersion ?: target.minecraft)
+                    }
+                }
+            }
+        }
+    }
+}
+
 if (profile.classicLaunch) tasks.jar {
     manifest.attributes(
         "Specification-Title" to metadata.id,
