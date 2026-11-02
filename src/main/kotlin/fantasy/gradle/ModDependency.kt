@@ -12,10 +12,10 @@ interface ModDependency : Serializable {
 data class RequiredMod(override val id: String, override val version: String) : ModDependency
 
 data class GeckoLib(override val version: String) : ModDependency {
-    override val id get() = "geckolib"
+    override val id get() = if (version.startsWith("3.")) "geckolib3" else "geckolib"
 
     val modelDirectory: String get() = when (version.substringBefore('.')) {
-        "4" -> "geo"
+        "3", "4" -> "geo"
         "5" -> "geckolib/models"
         else -> error("Unsupported GeckoLib model layout: $version")
     }
@@ -27,7 +27,14 @@ data class GeckoLib(override val version: String) : ModDependency {
         return if (major > 5 || major == 5 && minor >= 5) "com.geckolib" else "software.bernie.geckolib"
     }
 
-    fun notation(target: Target) = "$group:geckolib-${target.loader.id}-${target.minecraft}:$version"
+    fun notation(target: Target): String {
+        val minecraft = if (version.startsWith("3.")) when (target.minecraft) {
+            "1.18.2" -> "1.18"
+            "1.19.2" -> "1.19"
+            else -> target.minecraft
+        } else target.minecraft
+        return "$group:geckolib-${target.loader.id}-$minecraft:$version"
+    }
 }
 
 data class FabricApi(override val version: String, override val id: String = "fabric-api") : ModDependency {

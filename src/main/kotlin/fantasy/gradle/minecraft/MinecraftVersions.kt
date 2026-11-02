@@ -22,7 +22,7 @@ object MinecraftVersions {
         MinecraftVersion(
             runtime = MinecraftRuntime(id = "1.12.2", java = 8),
             compatibilityUpperBound = "1.13",
-            resources = MinecraftResources(
+            resources = MinecraftResources(armorBaseMaterial = "diamond",
                 recipes = RecipeFormat(
                     directory = "recipes", root = "assets",
                     ingredients = IngredientEncoding.ITEM_WITH_METADATA,
@@ -32,6 +32,7 @@ object MinecraftVersions {
                         "minecraft:slime_block" to RecipeItem("minecraft:slime"),
                         "minecraft:white_tulip" to RecipeItem("minecraft:red_flower", 6),
                         "minecraft:yellow_dye" to RecipeItem("minecraft:dye", 11),
+                        "minecraft:ink_sac" to RecipeItem("minecraft:dye", 0),
                         "minecraft:magenta_dye" to RecipeItem("minecraft:dye", 13),
                         "minecraft:acacia_log" to RecipeItem("minecraft:log2", 0),
                         "minecraft:oak_log" to RecipeItem("minecraft:log", 0),
@@ -58,7 +59,7 @@ object MinecraftVersions {
             resourcePackFormat = PackFormat(3),
             structures = "structures",
             loaders = LoaderProfiles(forge = ForgeProfile(
-                version = "14.23.5.2864", names = ForgeNames.SRG,
+                version = "14.23.5.2864", geckolib = "3.0.30", names = ForgeNames.SRG,
                 metadata = ForgeMetadata.MCMOD_INFO,
                 mappingsChannel = "stable", mappingsVersion = "39-1.12",
             )),
@@ -66,7 +67,7 @@ object MinecraftVersions {
         MinecraftVersion(
             runtime = MinecraftRuntime(id = "1.14.4", java = 8),
             compatibilityUpperBound = "1.15",
-            resources = MinecraftResources(
+            resources = MinecraftResources(armorBaseMaterial = "diamond",
                 recipes = RecipeFormat(
                     directory = "recipes", ingredients = IngredientEncoding.ITEM_OBJECT,
                     craftingResult = ResultEncoding.ITEM_FIELD, upgrade = UpgradeRecipeMethod.CraftingTable,
@@ -85,7 +86,7 @@ object MinecraftVersions {
         MinecraftVersion(
             runtime = MinecraftRuntime(id = "1.15.2", java = 8),
             compatibilityUpperBound = "1.16",
-            resources = MinecraftResources(
+            resources = MinecraftResources(armorBaseMaterial = "diamond",
                 recipes = RecipeFormat(
                     directory = "recipes", ingredients = IngredientEncoding.ITEM_OBJECT,
                     craftingResult = ResultEncoding.ITEM_FIELD, upgrade = UpgradeRecipeMethod.CraftingTable,
@@ -96,7 +97,7 @@ object MinecraftVersions {
             dataPackFormat = PackFormat(5), resourcePackFormat = PackFormat(5),
             structures = "structures",
             loaders = LoaderProfiles(
-                forge = ForgeProfile(version = "31.2.62", names = ForgeNames.SRG),
+                forge = ForgeProfile(version = "31.2.62", geckolib = "3.0.46", names = ForgeNames.SRG),
                 fabric = FabricProfile(version = "0.16.7",
                     fabricApi = "0.28.5+1.15", clothConfig = "2.14.2", fabricApiModId = "fabric", clothConfigModule = "config-2", autoConfig1u = "2.2.0"),
             ),
@@ -115,8 +116,8 @@ object MinecraftVersions {
             dataPackFormat = PackFormat(6), resourcePackFormat = PackFormat(6),
             structures = "structures",
             loaders = LoaderProfiles(
-                forge = ForgeProfile(version = "36.2.42", names = ForgeNames.SRG),
-                fabric = FabricProfile(version = "0.16.7",
+                forge = ForgeProfile(version = "36.2.42", geckolib = "3.0.106", names = ForgeNames.SRG),
+                fabric = FabricProfile(version = "0.16.7", geckolib = "3.0.107",
                     fabricApi = "0.42.0+1.16", clothConfig = "4.17.101", fabricApiModId = "fabric"),
             ),
         ),
@@ -134,9 +135,9 @@ object MinecraftVersions {
             dataPackFormat = PackFormat(9), resourcePackFormat = PackFormat(8),
             structures = "structures",
             loaders = LoaderProfiles(
-                forge = ForgeProfile(version = "40.3.12", names = ForgeNames.SRG, tests = TestRegistration.FORGE_CONTAINER,
+                forge = ForgeProfile(version = "40.3.12", geckolib = "3.0.57", names = ForgeNames.SRG, tests = TestRegistration.FORGE_CONTAINER,
                     launchJvmArgs = listOf("--add-exports=cpw.mods.bootstraplauncher/cpw.mods.bootstraplauncher=ALL-UNNAMED")),
-                fabric = FabricProfile(version = "0.16.7", tests = TestRegistration.FABRIC_VANILLA,
+                fabric = FabricProfile(version = "0.16.7", geckolib = "3.0.80", tests = TestRegistration.FABRIC_VANILLA,
                     fabricApi = "0.77.0+1.18.2", clothConfig = "6.5.102"),
             ),
         ),
@@ -154,8 +155,8 @@ object MinecraftVersions {
             dataPackFormat = PackFormat(10), resourcePackFormat = PackFormat(9),
             structures = "structures",
             loaders = LoaderProfiles(
-                forge = ForgeProfile(version = "43.5.2", names = ForgeNames.SRG, tests = TestRegistration.FORGE_CONTAINER),
-                fabric = FabricProfile(version = "0.16.7", tests = TestRegistration.FABRIC_VANILLA,
+                forge = ForgeProfile(version = "43.5.2", geckolib = "3.1.40", names = ForgeNames.SRG, tests = TestRegistration.FORGE_CONTAINER),
+                fabric = FabricProfile(version = "0.16.7", geckolib = "3.1.40", tests = TestRegistration.FABRIC_VANILLA,
                     fabricApi = "0.77.0+1.19.2", clothConfig = "8.3.134"),
             ),
         ),
@@ -173,8 +174,8 @@ object MinecraftVersions {
             dataPackFormat = PackFormat(10), resourcePackFormat = PackFormat(12),
             structures = "structures",
             loaders = LoaderProfiles(
-                forge = ForgeProfile(version = "44.1.23", names = ForgeNames.SRG, tests = TestRegistration.FORGE_CONTAINER),
-                fabric = FabricProfile(version = "0.16.7", tests = TestRegistration.FABRIC_VANILLA,
+                forge = ForgeProfile(version = "44.1.23", geckolib = "4.0.6", names = ForgeNames.SRG, tests = TestRegistration.FORGE_CONTAINER),
+                fabric = FabricProfile(version = "0.16.7", geckolib = "4.0.6", tests = TestRegistration.FABRIC_VANILLA,
                     fabricApi = "0.76.1+1.19.3", clothConfig = "9.1.104"),
             ),
         ),

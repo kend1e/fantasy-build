@@ -17,9 +17,8 @@ class TranslationCatalog internal constructor(
                 "assets/$namespace/lang/$locale.json" to json(values)
             } else {
                 val text = values.entries.joinToString("\n", postfix = "\n") { (key, value) ->
-                    require('\n' !in value && '\r' !in value) { "$locale: multiline translation cannot be written as .lang: $key" }
                     val name = if (key.startsWith("item.$namespace.") && !key.endsWith(".tooltip")) "$key.name" else key
-                    "$name=$value"
+                    "$name=${value.replace("\r\n", " ").replace('\n', ' ').replace('\r', ' ')}"
                 }
                 "assets/$namespace/lang/$locale.lang" to text
             }

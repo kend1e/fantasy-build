@@ -40,4 +40,5 @@ data class MinecraftResources(
     val armorTags: ArmorTagFormat,
     val swordTags: Boolean,
     val translations: TranslationFormat = TranslationFormat.JSON,
+    val armorBaseMaterial: String = "netherite",
 )
